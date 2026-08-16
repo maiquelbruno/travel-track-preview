@@ -374,7 +374,7 @@
   }
   .route-point{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
   .route-point small{display:block;font-size:8px;color:rgba(255,255,255,.48);letter-spacing:.08em;margin-top:3px}
-  .route-point .pin{font-size:18px}
+  .route-point .pin{font-size:0;display:inline-block;width:24px;height:18px;flex:0 0 auto;border-radius:2px;overflow:hidden}
   .route-line{height:1px;flex:1;min-width:50px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.7) 0 7px,transparent 7px 14px)}
   .route-destination{display:flex;align-items:center;gap:8px}
   .route-globe{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(15,94,118,.52);border:1px solid rgba(152,222,234,.35);font-size:19px}
@@ -426,11 +426,11 @@
   .transition-progress-track{position:relative;height:4px;border-radius:999px;background:rgba(255,255,255,.12);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 28px rgba(61,169,201,.08)}
   .transition-progress-fill{position:absolute;left:0;top:0;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#f4c51b,#5cc9e9);box-shadow:0 0 18px rgba(92,201,233,.35)}
   .transition-progress-plane{position:absolute;z-index:7;left:0;top:50%;width:58px;height:58px;transform:translate(-50%,-50%);filter:drop-shadow(0 7px 12px rgba(0,0,0,.5));will-change:left}
-  .transition-progress-plane img{width:58px;height:58px;object-fit:contain;display:block}
+  .transition-progress-plane img{width:58px;height:58px;object-fit:contain;display:block;transform:rotate(90deg)}
   .transition-origin,.transition-destination{position:absolute;top:25px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:64px}
-  .transition-origin{left:0;transform:translateX(-50%)}
+  .transition-origin{left:0;top:56px;transform:translateX(-50%)}
   .transition-destination{right:0;transform:translateX(50%)}
-  .transition-origin-flag{font-size:25px;line-height:1}
+  .transition-origin-flag{font-size:0;line-height:1;display:block;width:28px;height:19px;border-radius:2px;overflow:hidden}
   .transition-destination-globe{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;filter:drop-shadow(0 0 18px rgba(102,205,224,.25));border:1px solid rgba(178,227,235,.25)}
   .transition-point-label{font-size:8px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap}
   .transition-percent{position:absolute;left:0;top:30px;transform:translateX(-50%);font-size:9px;font-weight:850;color:#f4c51b;letter-spacing:.08em;min-width:32px;text-align:center}
@@ -443,7 +443,7 @@
   @media(max-width:760px){
     .transition-progress-wrap{width:86vw}.transition-loader-head{margin-bottom:36px}.transition-progress-stage{padding:0 48px 58px}
     .transition-progress-plane{width:46px;height:46px}.transition-progress-plane img{width:46px;height:46px}
-    .transition-origin-flag{font-size:21px}.transition-destination-globe{width:40px;height:40px}
+    .transition-origin-flag{width:23px;height:16px}.transition-destination-globe{width:40px;height:40px}
     .transition-point-label{font-size:7px}.transition-status-line{margin-top:42px}
   }
 
@@ -523,7 +523,7 @@
           <p class="intro-lead" data-pt="Um projeto inspirado em uma grande jornada da aviação e transformado em uma experiência virtual. A bordo de um RV-10, acompanhe no Microsoft Flight Simulator 2020 a reprodução dessa volta ao mundo, etapa por etapa, pouso por pouso." data-en="A project inspired by a remarkable aviation journey and transformed into a virtual experience. Aboard an RV-10, follow the recreation of this round-the-world flight in Microsoft Flight Simulator 2020, one leg and one landing at a time.">Um projeto inspirado em uma grande jornada da aviação e transformado em uma experiência virtual. A bordo de um RV-10, acompanhe no Microsoft Flight Simulator 2020 a reprodução dessa volta ao mundo, etapa por etapa, pouso por pouso.</p>
 
           <div class="intro-route-strip">
-            <div class="route-point"><span class="pin">🇧🇷</span><div><strong>Aquiraz / Fortaleza</strong><small data-pt="Partida · Brasil" data-en="Departure · Brazil">Partida · Brasil</small></div></div>
+            <div class="route-point"><span class="pin fi fi-br" aria-label="Brasil"></span><div><strong>Aquiraz / Fortaleza</strong><small data-pt="Partida · Brasil" data-en="Departure · Brazil">Partida · Brasil</small></div></div>
             <div class="route-line"></div>
             <div class="route-destination"><div><strong data-pt="O Mundo" data-en="The World">O Mundo</strong><small data-pt="Uma etapa de cada vez" data-en="One leg at a time">Uma etapa de cada vez</small></div><img class="route-globe" src="rv10-earth.png" alt="Terra" /></div>
           </div>
@@ -573,7 +573,7 @@
           <div class="transition-ticks" aria-hidden="true"><span class="transition-tick major"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick major"></span></div>
         </div>
         <div class="transition-origin">
-          <span class="transition-origin-flag">🇧🇷</span>
+          <span class="transition-origin-flag fi fi-br" aria-label="Brasil"></span>
           <span class="transition-point-label">Brasil · início</span>
         </div>
         <div class="transition-destination">
