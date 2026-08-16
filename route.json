@@ -158,5 +158,13 @@
     "country": "US",
     "lat": 41.90779877,
     "lon": -88.24859619
+  },
+  {
+    "icao": "KOSH",
+    "name": "Wittman Regional Airport",
+    "muni": "Oshkosh",
+    "country": "US",
+    "lat": 43.98440170288086,
+    "lon": -88.55699920654297
   }
 ]
