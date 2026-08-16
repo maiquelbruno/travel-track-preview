@@ -434,6 +434,10 @@
   .transition-destination-globe{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;filter:drop-shadow(0 0 18px rgba(102,205,224,.25));border:1px solid rgba(178,227,235,.25)}
   .transition-point-label{font-size:8px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap}
   .transition-percent{position:absolute;left:0;top:30px;transform:translateX(-50%);font-size:9px;font-weight:850;color:#f4c51b;letter-spacing:.08em;min-width:32px;text-align:center}
+  .transition-ticks{position:absolute;left:0;right:0;top:13px;display:flex;justify-content:space-between;pointer-events:none}
+  .transition-tick{width:1px;height:7px;background:rgba(255,255,255,.2)}
+  .transition-tick.major{height:10px;background:rgba(255,255,255,.38)}
+  .transition-percent-scale{position:absolute;left:0;right:0;top:30px;display:flex;justify-content:space-between;color:rgba(255,255,255,.32);font-size:8px;letter-spacing:.05em}
   .transition-status-line{margin-top:50px;text-align:center;font-size:9px;font-weight:750;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.42);animation:transitionStatusPulse 1.35s ease-in-out infinite}
   @keyframes transitionStatusPulse{0%,100%{opacity:.42}50%{opacity:1}}
   @media(max-width:760px){
@@ -492,6 +496,40 @@
   .intro-credit-grid .intro-credit strong{display:block;color:#fff;font-size:11px;line-height:1.35}
   .intro-credit-grid .intro-credit span{display:block;margin-top:3px;font-size:8px;color:rgba(255,255,255,.42)}
   @media(max-width:760px){.intro-credit-grid{grid-template-columns:1fr}}
+
+
+  #musicPanel{
+    position:fixed;right:18px;bottom:18px;z-index:30000;
+    display:flex;align-items:center;gap:9px;min-height:42px;
+    padding:6px 8px 6px 7px;border:1px solid rgba(255,255,255,.20);
+    border-radius:999px;background:rgba(5,16,25,.72);
+    backdrop-filter:blur(14px);box-shadow:0 10px 28px rgba(0,0,0,.25);
+    color:#fff;
+  }
+  #musicMuteBtn{
+    width:29px;height:29px;border:0;border-radius:50%;
+    background:rgba(255,255,255,.13);color:#fff;cursor:pointer;
+    display:grid;place-items:center;font-size:13px;
+  }
+  #musicMuteBtn:hover{background:rgba(255,255,255,.22)}
+  .music-panel-meta{min-width:118px;line-height:1.1}
+  .music-panel-meta strong{display:block;font-size:8px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+  .music-panel-meta small{display:block;margin-top:3px;font-size:7px;color:rgba(255,255,255,.52);white-space:nowrap}
+  #musicPanel #musicVolume{
+    width:72px;height:4px;
+  }
+  #musicMode{
+    border:1px solid rgba(255,255,255,.16);border-radius:999px;
+    background:rgba(255,255,255,.08);color:#fff;
+    font:700 7px 'Inter',sans-serif;letter-spacing:.06em;
+    padding:5px 7px;outline:none;cursor:pointer;
+  }
+  #musicMode option{background:#0b1822;color:#fff}
+  @media(max-width:700px){
+    #musicPanel{right:10px;bottom:10px;gap:6px}
+    .music-panel-meta{min-width:94px}
+    #musicPanel #musicVolume{width:55px}
+  }
 
 </style>
 </head>
@@ -577,6 +615,22 @@
       </div>
     </div>
   </section>
+
+  <div id="musicPanel" aria-label="Controle de música">
+    <button id="musicMuteBtn" type="button" aria-label="Mutar música" title="Mutar / ativar música">
+      <span id="musicMuteIcon">🔊</span>
+    </button>
+    <div class="music-panel-meta">
+      <strong id="musicTrackName">Wildfire · Jessie Villa</strong>
+      <small id="musicContext">Abertura</small>
+    </div>
+    <input id="musicVolume" type="range" min="0" max="100" value="42" aria-label="Volume da música">
+    <select id="musicMode" aria-label="Modo da música">
+      <option value="sequence">Normal</option>
+      <option value="random">Aleatório</option>
+    </select>
+  </div>
+  <audio id="musicAudio" preload="auto"></audio>
   <div id="previewLoading">Carregando rota do Preview…</div>
   <div id="previewControls" aria-label="Controles do Preview">
     <label for="previewMapSelect">Mapa</label>
@@ -1491,6 +1545,7 @@ async function loadAirportsDatabase(){
 
   async function playRoute(){
     if(isBusy || route.length < 2) return;
+    playMusicForContext('map', true);
     isBusy = true;
     playbackToken++;
     var token = playbackToken;
@@ -1548,12 +1603,14 @@ async function loadAirportsDatabase(){
       setSearchEnabled(false);
       updatePlayButton();
       setPreviewStatus('FIM — reiniciando');
+      playMusicForContext('intro', true);
       schedulePreviewLoop();
     }
   }
 
   function stopPlayback(){
     if(!isBusy) return;
+    playMusicForContext('intro', true);
     playbackToken++;
     if(activeCenterCancel) activeCenterCancel();
     if(activePlaybackCancel) activePlaybackCancel();
@@ -1877,7 +1934,7 @@ async function loadAirportsDatabase(){
     var pt=document.getElementById('langPt'),en=document.getElementById('langEn');
     if(pt)pt.addEventListener('click',function(){setIntroLanguage('pt');});if(en)en.addEventListener('click',function(){setIntroLanguage('en');});
     var start=document.getElementById('startJourneyBtn');
-    if(start&&!start._bound){start._bound=true;start.addEventListener('click',function(){var m=createIntroMusic();if(m&&!m.started)m.start();beginFlightTransition();});}
+    if(start&&!start._bound){start._bound=true;start.addEventListener('click',function(){beginFlightTransition();});}
   }
   function beginFlightTransition(){
     var root=document.getElementById('projectIntro');
@@ -1930,68 +1987,179 @@ async function loadAirportsDatabase(){
     requestAnimationFrame(frame);
   }
 
+
   // ---------- Background music ----------
-  var introMusic=null;
-  function createIntroMusic(){
-    if(introMusic)return introMusic;
-    var AC=window.AudioContext||window.webkitAudioContext;
-    if(!AC)return null;
-    var ctx=new AC();
-    var master=ctx.createGain();master.gain.value=.084;master.connect(ctx.destination);
-    var filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=1800;filter.Q.value=.35;filter.connect(master);
-    var comp=ctx.createDynamicsCompressor();comp.threshold.value=-24;comp.knee.value=18;comp.ratio.value=5;comp.attack.value=.01;comp.release.value=.35;comp.connect(filter);
-    var notes=[146.83,174.61,196,220,261.63,293.66,329.63,392];
-    var chordSets=[[146.83,220,293.66],[174.61,261.63,329.63],[196,293.66,392],[220,329.63,440]];
-    var state={ctx:ctx,master:master,filter:filter,comp:comp,muted:false,timer:null,step:0,started:false};
-    function pulse(){
-      var now=ctx.currentTime;var set=chordSets[state.step%chordSets.length];
-      set.forEach(function(freq,i){
-        var o=ctx.createOscillator(),g=ctx.createGain();o.type=i===0?'sine':'triangle';o.frequency.value=freq;g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(.13/(i+1),now+.7);g.gain.exponentialRampToValueAtTime(.0001,now+3.8);o.connect(g).connect(comp);o.start(now);o.stop(now+4.1);
-      });
-      var bell=ctx.createOscillator(),bg=ctx.createGain();bell.type='sine';bell.frequency.value=notes[(state.step*2)%notes.length]*2;bg.gain.setValueAtTime(0,now);bg.gain.linearRampToValueAtTime(.045,now+.08);bg.gain.exponentialRampToValueAtTime(.0001,now+1.6);bell.connect(bg).connect(comp);bell.start(now);bell.stop(now+1.7);
-      state.step++;state.timer=window.setTimeout(pulse,4200);
+  // Place these two files in the repository:
+  //   audio/Wildfire.mp3  -> opening / transition
+  //   audio/Soaring.mp3   -> map playback
+  // The browser may block audible autoplay. We attempt it on page load and
+  // resume automatically on the first user interaction if the browser blocks it.
+  var musicState = {
+    audio: null,
+    volume: 0.42,
+    muted: false,
+    mode: 'sequence',
+    context: 'intro',
+    started: false,
+    current: ''
+  };
+
+  var musicTracks = {
+    intro: [
+      {name:'Wildfire · Jessie Villa', src:'audio/Wildfire.mp3'},
+      {name:'Soaring · The Grey Room / Golden Palms', src:'audio/Soaring.mp3'}
+    ],
+    map: [
+      {name:'Soaring · The Grey Room / Golden Palms', src:'audio/Soaring.mp3'},
+      {name:'Wildfire · Jessie Villa', src:'audio/Wildfire.mp3'}
+    ]
+  };
+
+  function chooseMusicTrack(context){
+    var list = musicTracks[context] || musicTracks.intro;
+    if(musicState.mode === 'random'){
+      return list[Math.floor(Math.random()*list.length)];
     }
-    state.start=function(){if(ctx.state==='suspended')ctx.resume();if(!state.timer)pulse();state.started=true;var toggle=document.getElementById('musicToggle');if(toggle)toggle.classList.add('is-playing');};
-    state.volume=.084;
-    state.setVolume=function(v){state.volume=Math.max(0,Math.min(1,Number(v)||0));if(!state.muted)master.gain.setTargetAtTime(state.volume,ctx.currentTime,.08);};
-    state.toggle=function(){state.muted=!state.muted;master.gain.setTargetAtTime(state.muted?0:state.volume,ctx.currentTime,.08);var b=document.getElementById('musicToggle');b.classList.toggle('is-muted',state.muted);b.setAttribute('aria-pressed',String(state.muted));b.setAttribute('aria-label',state.muted?'Ativar música':'Mutar música');var play=b.querySelector('.music-play');if(play)play.textContent=state.muted?'▶':'Ⅱ';};
-    introMusic=state;return state;
+    // Normal mode: the requested track for each section.
+    return context === 'map' ? list[0] : list[0];
   }
-  function initAmbientMusicAutostart(){
-    if(document.documentElement._rv10MusicBound)return;
-    document.documentElement._rv10MusicBound=true;
-    var startOnce=function(){
-      var m=createIntroMusic();
-      if(m&&!m.started)m.start();
-      document.removeEventListener('pointerdown',startOnce,true);
-      document.removeEventListener('keydown',startOnce,true);
-      document.removeEventListener('touchstart',startOnce,true);
+
+  function updateMusicUI(){
+    var audio=musicState.audio;
+    var mute=document.getElementById('musicMuteBtn');
+    var icon=document.getElementById('musicMuteIcon');
+    var name=document.getElementById('musicTrackName');
+    var context=document.getElementById('musicContext');
+    var vol=document.getElementById('musicVolume');
+    var mode=document.getElementById('musicMode');
+
+    if(name) name.textContent=musicState.current || 'Música';
+    if(context) context.textContent=musicState.context==='map' ? 'Mapa · reprodução' : 'Abertura · transição';
+    if(vol) vol.value=String(Math.round(musicState.volume*100));
+    if(mode) mode.value=musicState.mode;
+    if(icon) icon.textContent=musicState.muted || musicState.volume===0 ? '🔇' : '🔊';
+    if(mute) mute.setAttribute('aria-label', musicState.muted ? 'Ativar música' : 'Mutar música');
+    if(audio){
+      audio.volume=musicState.muted ? 0 : musicState.volume;
+    }
+  }
+
+  function initMusic(){
+    if(musicState.audio) return musicState.audio;
+    var audio=document.getElementById('musicAudio');
+    if(!audio) return null;
+
+    musicState.audio=audio;
+    audio.volume=musicState.volume;
+
+    audio.addEventListener('ended',function(){
+      if(musicState.mode==='random'){
+        playMusicForContext(musicState.context,true);
+      } else {
+        audio.currentTime=0;
+        var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+      }
+    });
+
+    var savedVolume=localStorage.getItem('rv10-music-volume');
+    var savedMode=localStorage.getItem('rv10-music-mode');
+    if(savedVolume!==null){
+      var v=Math.max(0,Math.min(1,Number(savedVolume)));
+      if(isFinite(v)) musicState.volume=v;
+    }
+    if(savedMode==='random'||savedMode==='sequence') musicState.mode=savedMode;
+
+    updateMusicUI();
+
+    // Try to start as soon as the page opens.
+    playMusicForContext('intro',false);
+
+    // If autoplay is blocked, the first click/touch/keypress starts it.
+    var resume=function(){
+      if(!musicState.started){
+        playMusicForContext('intro',false);
+      }
     };
-    document.addEventListener('pointerdown',startOnce,true);
-    document.addEventListener('keydown',startOnce,true);
-    document.addEventListener('touchstart',startOnce,true);
+    ['pointerdown','keydown','touchstart'].forEach(function(ev){
+      document.addEventListener(ev,resume,{once:true,passive:true});
+    });
+
+    return audio;
+  }
+
+  function playMusicForContext(context,forceNew){
+    var audio=musicState.audio || initMusic();
+    if(!audio) return;
+
+    var track=chooseMusicTrack(context);
+    musicState.context=context;
+
+    if(forceNew || musicState.current!==track.name || audio.src.indexOf(track.src)===-1){
+      audio.src=track.src;
+      audio.currentTime=0;
+      musicState.current=track.name;
+    }
+
+    audio.loop=(musicState.mode!=='random');
+    audio.volume=musicState.muted ? 0 : musicState.volume;
+
+    var p=audio.play();
+    if(p && p.then){
+      p.then(function(){
+        musicState.started=true;
+        updateMusicUI();
+      }).catch(function(){
+        // Browser autoplay policy: the first user interaction will retry.
+      });
+    }
+    updateMusicUI();
   }
 
   function initMusicControl(){
-    var b=document.getElementById('musicToggle');if(!b||b._bound)return;
-    b._bound=true;
+    var audio=initMusic();
+    if(!audio) return;
+
+    var mute=document.getElementById('musicMuteBtn');
     var volume=document.getElementById('musicVolume');
-    b.addEventListener('click',function(e){
-      if(e.target===volume)return;
-      var m=createIntroMusic();if(!m)return;
-      if(!m.started)m.start();else m.toggle();
-    });
-    if(volume)volume.addEventListener('input',function(e){
-      e.stopPropagation();
-      var m=createIntroMusic();if(!m)return;
-      var v=Number(e.target.value)/100;
-      m.setVolume(v*.145);
-      if(!m.started && v>0)m.start();
-    });
+    var mode=document.getElementById('musicMode');
+
+    if(mute && !mute._bound){
+      mute._bound=true;
+      mute.addEventListener('click',function(){
+        musicState.muted=!musicState.muted;
+        audio.volume=musicState.muted ? 0 : musicState.volume;
+        if(!musicState.muted){
+          var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+        }
+        updateMusicUI();
+      });
+    }
+
+    if(volume && !volume._bound){
+      volume._bound=true;
+      volume.addEventListener('input',function(){
+        musicState.volume=Math.max(0,Math.min(1,Number(volume.value)/100));
+        if(musicState.volume>0) musicState.muted=false;
+        audio.volume=musicState.muted ? 0 : musicState.volume;
+        localStorage.setItem('rv10-music-volume',String(musicState.volume));
+        updateMusicUI();
+        var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+      });
+    }
+
+    if(mode && !mode._bound){
+      mode._bound=true;
+      mode.addEventListener('change',function(){
+        musicState.mode=mode.value==='random'?'random':'sequence';
+        localStorage.setItem('rv10-music-mode',musicState.mode);
+        playMusicForContext(musicState.context,true);
+      });
+    }
   }
 
   // ---------- Init ----------
   async function init(){
+    initMusicControl();
     initMap();
     try {
       await loadAirportsDatabase();
@@ -2041,8 +2209,6 @@ async function loadAirportsDatabase(){
     prepareProjectIntro();
   }
 
-  initAmbientMusicAutostart();
-  initMusicControl();
   init();
 })();
 
