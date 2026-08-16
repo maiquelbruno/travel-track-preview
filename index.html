@@ -1568,7 +1568,7 @@ async function loadAirportsDatabase(){
       renderAllStatic();
       if(route.length) fitToRoute();
       previewChangingMap=false;
-      if(!previewPaused) playRoute();
+      playRoute();
     });
     setPreviewLoading(false);
     setPreviewStatus('PREVIEW');
