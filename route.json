@@ -166,5 +166,13 @@
     "country": "US",
     "lat": 43.98440170288086,
     "lon": -88.55699920654297
+  },
+  {
+    "icao": "KMSP",
+    "name": "Minneapolis–Saint Paul International Airport / Wold–Chamberlain Field",
+    "muni": "Minneapolis",
+    "country": "US",
+    "lat": 44.880081,
+    "lon": -93.221741
   }
 ]
