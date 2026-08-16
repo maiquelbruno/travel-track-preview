@@ -387,7 +387,7 @@
   .intro-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.14)}
   .intro-card-title{font-size:12px;font-weight:850}.intro-card-title-en{font-size:10px;color:rgba(255,255,255,.52)}
   .intro-card-bar{height:3px;width:82px;border-radius:99px;background:linear-gradient(90deg,#2ba8d4 0 55%,#f4c51b 55% 100%);margin-top:7px}
-  .intro-card p{font-size:11px;line-height:1.7;color:rgba(255,255,255,.72);margin:17px 0 0}
+  .intro-card p{font-size:13px;line-height:1.72;color:rgba(255,255,255,.78);margin:17px 0 0}
   .intro-card p strong{color:#fff}
   .intro-credit{margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:10px;line-height:1.6;color:rgba(255,255,255,.55)}
   .intro-credit strong{color:#fff}
@@ -476,7 +476,7 @@
   .route-destination small{display:block;margin-top:5px;color:rgba(255,255,255,.62);font-size:8px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
   .route-globe{width:38px;height:38px;object-fit:cover;border-radius:50%;display:block;border:1px solid rgba(152,222,234,.35);filter:drop-shadow(0 0 12px rgba(102,205,224,.18))}
   .intro-card{width:min(100%,430px);padding:24px 26px}
-  .intro-card p{font-size:11.5px;line-height:1.72}
+  .intro-card p{font-size:13.5px;line-height:1.74}
   .intro-credit{font-size:9px;line-height:1.45}
   .intro-signature{font-size:18px}
   .intro-stats{width:min(760px,calc(100% - 44px))}
@@ -2096,34 +2096,26 @@ async function loadAirportsDatabase(){
       if(isFinite(v)) musicState.volume=v;
     }
 
+    // O rádio inicia pausado: fica a critério da pessoa iniciar a reprodução
+    // pelo botão de play no painel de música.
+    musicState.paused=true;
+    if(audio.src.indexOf(RADIO_STREAM_URL)===-1){
+      audio.src=RADIO_STREAM_URL;
+    }
     updateMusicUI();
-
-    // O rádio começa a tocar assim que a página abre.
-    playRadioStream();
-
-    // Fallback obrigatório para políticas de autoplay dos navegadores.
-    var resume=function(){
-      if(!musicState.started && !musicState.paused){
-        playRadioStream();
-      }
-    };
-    ['pointerdown','keydown','touchstart'].forEach(function(ev){
-      document.addEventListener(ev,resume,{once:true,passive:true});
-    });
 
     return audio;
   }
 
   // Mantido por compatibilidade com os pontos da jornada que sinalizavam a
   // etapa atual (abertura, carregamento, rota). Como agora há um único rádio
-  // contínuo, apenas garantimos que ele esteja tocando, sem trocar a fonte.
+  // contínuo controlado manualmente pela pessoa, essas chamadas não iniciam
+  // nem interrompem a reprodução — apenas garantem que, se já estiver
+  // tocando, o stream continue ativo.
   function playMusicForContext(context, forceNew){
     var audio=musicState.audio || initMusic();
     if(!audio) return;
-    if(forceNew && musicState.paused){
-      musicState.paused=false;
-    }
-    if(audio.paused && !musicState.paused){
+    if(!musicState.paused && audio.paused){
       playRadioStream();
     }
   }
