@@ -1546,7 +1546,12 @@ async function loadAirportsDatabase(){
     await setBaseMap('voyager');
     var ok = await loadPreviewRoute();
     if(!ok) return;
-    renderAllStatic();
+    // No preview, a rota planejada não é exibida antes da reprodução.
+    // O mapa fica limpo e a animação já começa automaticamente.
+    markerLayer.clearLayers();
+    lineLayer.clearLayers();
+    playbackTrailLayer.clearLayers();
+    if(planeMarker){ map.removeLayer(planeMarker); planeMarker=null; }
     updateStats();
     renderLog();
     var select=document.getElementById('previewMapSelect');
