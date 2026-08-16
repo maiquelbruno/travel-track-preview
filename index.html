@@ -516,7 +516,7 @@
     display:grid;place-items:center;font-size:10px;flex:0 0 auto;border:0;cursor:pointer;
   }
   #musicPlayBtn:hover{background:#fff;transform:scale(1.04)}
-  #musicPlayBtn:focus-visible,#musicMuteBtn:focus-visible,#musicVolume:focus-visible,#musicMode:focus-visible{
+  #musicPlayBtn:focus-visible,#musicMuteBtn:focus-visible,#musicVolume:focus-visible{
     outline:2px solid rgba(255,255,255,.7);outline-offset:2px;
   }
   #musicMuteBtn:hover{background:rgba(255,255,255,.22)}
@@ -526,13 +526,6 @@
   #musicPanel #musicVolume{
     width:72px;height:4px;
   }
-  #musicMode{
-    border:1px solid rgba(255,255,255,.16);border-radius:999px;
-    background:rgba(255,255,255,.08);color:#fff;
-    font:700 7px 'Inter',sans-serif;letter-spacing:.06em;
-    padding:5px 7px;outline:none;cursor:pointer;
-  }
-  #musicMode option{background:#0b1822;color:#fff}
   @media(max-width:700px){
     #musicPanel{right:10px;bottom:10px;gap:6px}
     .music-panel-meta{min-width:94px}
@@ -540,9 +533,6 @@
   }
 
 </style>
-  <link rel="preload" as="audio" href="audio/Horizonte.wav">
-  <link rel="preload" as="audio" href="audio/EmEspera.wav">
-  <link rel="preload" as="audio" href="audio/VooMundial.wav">
 </head>
 <body>
 <div id="app">
@@ -628,23 +618,19 @@
   </section>
 
   <div id="musicPanel" aria-label="Controle de música">
-    <button id="musicPlayBtn" type="button" aria-label="Pausar música" title="Pausar / tocar música">
+    <button id="musicPlayBtn" type="button" aria-label="Pausar rádio" title="Pausar / tocar rádio">
       <span id="musicPlayIcon">▶</span>
     </button>
-    <button id="musicMuteBtn" type="button" aria-label="Mutar música" title="Mutar / ativar música">
+    <button id="musicMuteBtn" type="button" aria-label="Mutar rádio" title="Mutar / ativar rádio">
       <span id="musicMuteIcon">🔊</span>
     </button>
     <div class="music-panel-meta">
-      <strong id="musicTrackName">Horizonte · ambiente</strong>
-      <small id="musicContext">Abertura · ambiente</small>
+      <strong id="musicTrackName">Groove Salad</strong>
+      <small id="musicContext">SomaFM · rádio ao vivo</small>
     </div>
-    <input id="musicVolume" type="range" min="0" max="100" value="42" aria-label="Volume da música">
-    <select id="musicMode" aria-label="Modo da música">
-      <option value="sequence">Normal</option>
-      <option value="random">Aleatório</option>
-    </select>
+    <input id="musicVolume" type="range" min="0" max="100" value="42" aria-label="Volume do rádio">
   </div>
-  <audio id="musicAudio" preload="auto" crossorigin="anonymous"></audio>
+  <audio id="musicAudio" preload="none"></audio>
   <div id="previewLoading">Carregando rota do Preview…</div>
   <div id="previewControls" aria-label="Controles do Preview">
     <label for="previewMapSelect">Mapa</label>
@@ -2004,50 +1990,23 @@ async function loadAirportsDatabase(){
   }
 
 
-  // ---------- Background music ----------
-  // Três ambientes musicais originais, separados por etapa:
-  //   Horizonte.wav -> abertura / ambiente
-  //   EmEspera.wav  -> carregamento / espera
-  //   VooMundial.wav -> rota / voo
-  //
+  // ---------- Background music (rádio ao vivo) ----------
+  // Player único, tocando continuamente o stream da SomaFM · Groove Salad.
   // O navegador pode bloquear autoplay com som. Tentamos iniciar imediatamente
   // e repetimos no primeiro toque/clique/tecla caso a política do navegador impeça.
+  var RADIO_STREAM_URL = 'https://ice1.somafm.com/groovesalad-128-aac';
+  var RADIO_NAME = 'Groove Salad';
+  var RADIO_LABEL = 'SomaFM · rádio ao vivo';
+
   var musicState = {
     audio: null,
     volume: 0.42,
     muted: false,
     paused: false,
-    mode: 'sequence',
-    context: 'intro',
     started: false,
-    current: ''
+    reconnectTimer: null,
+    reconnectDelay: 2000
   };
-
-  var musicTracks = {
-    intro: [
-      {name:'Horizonte · ambiente', src:'audio/Horizonte.wav'}
-    ],
-    loading: [
-      {name:'Em Espera · carregamento', src:'audio/EmEspera.wav'}
-    ],
-    map: [
-      {name:'Voo Mundial · rota', src:'audio/VooMundial.wav'}
-    ]
-  };
-
-  function chooseMusicTrack(context){
-    var list = musicTracks[context] || musicTracks.intro;
-    if(musicState.mode === 'random' && list.length > 1){
-      return list[Math.floor(Math.random()*list.length)];
-    }
-    return list[0];
-  }
-
-  function musicContextLabel(context){
-    if(context==='loading') return 'Carregamento · aguarde';
-    if(context==='map') return 'Rota · voo mundial';
-    return 'Abertura · ambiente';
-  }
 
   function updateMusicUI(){
     var audio=musicState.audio;
@@ -2058,17 +2017,49 @@ async function loadAirportsDatabase(){
     var name=document.getElementById('musicTrackName');
     var context=document.getElementById('musicContext');
     var vol=document.getElementById('musicVolume');
-    var mode=document.getElementById('musicMode');
 
-    if(name) name.textContent=musicState.current || 'Música';
-    if(context) context.textContent=musicContextLabel(musicState.context);
+    if(name) name.textContent=RADIO_NAME;
+    if(context) context.textContent=RADIO_LABEL;
     if(vol) vol.value=String(Math.round(musicState.volume*100));
-    if(mode) mode.value=musicState.mode;
     if(muteIcon) muteIcon.textContent=musicState.muted || musicState.volume===0 ? '🔇' : '🔊';
-    if(mute) mute.setAttribute('aria-label', musicState.muted ? 'Ativar música' : 'Mutar música');
+    if(mute) mute.setAttribute('aria-label', musicState.muted ? 'Ativar rádio' : 'Mutar rádio');
     if(playIcon) playIcon.textContent=musicState.paused ? '▶' : 'Ⅱ';
-    if(play) play.setAttribute('aria-label', musicState.paused ? 'Tocar música' : 'Pausar música');
+    if(play) play.setAttribute('aria-label', musicState.paused ? 'Tocar rádio' : 'Pausar rádio');
     if(audio) audio.volume=musicState.muted ? 0 : musicState.volume;
+  }
+
+  function playRadioStream(){
+    var audio=musicState.audio;
+    if(!audio) return;
+    if(audio.src.indexOf(RADIO_STREAM_URL)===-1){
+      audio.src=RADIO_STREAM_URL;
+    }
+    audio.volume=musicState.muted ? 0 : musicState.volume;
+    var p=audio.play();
+    if(p && p.then){
+      p.then(function(){
+        musicState.started=true;
+        musicState.paused=false;
+        musicState.reconnectDelay=2000;
+        updateMusicUI();
+      }).catch(function(){
+        musicState.paused=true;
+        updateMusicUI();
+      });
+    }
+    updateMusicUI();
+  }
+
+  function scheduleReconnect(){
+    // Streams ao vivo podem cair; tentamos reconectar automaticamente
+    // enquanto o usuário não tiver pausado o rádio manualmente.
+    if(musicState.reconnectTimer) return;
+    if(musicState.paused) return;
+    musicState.reconnectTimer=setTimeout(function(){
+      musicState.reconnectTimer=null;
+      if(!musicState.paused) playRadioStream();
+    }, musicState.reconnectDelay);
+    musicState.reconnectDelay=Math.min(musicState.reconnectDelay*1.5,15000);
   }
 
   function initMusic(){
@@ -2078,17 +2069,7 @@ async function loadAirportsDatabase(){
 
     musicState.audio=audio;
     audio.volume=musicState.volume;
-
-    audio.addEventListener('ended',function(){
-      if(musicState.mode==='random'){
-        playMusicForContext(musicState.context,true);
-      }else{
-        audio.currentTime=0;
-        if(!musicState.paused){
-          var p=audio.play(); if(p&&p.catch)p.catch(function(){});
-        }
-      }
-    });
+    audio.loop=false; // stream ao vivo: não se aplica loop de arquivo
 
     audio.addEventListener('play',function(){
       musicState.paused=false;
@@ -2096,27 +2077,34 @@ async function loadAirportsDatabase(){
       updateMusicUI();
     });
     audio.addEventListener('pause',function(){
-      musicState.paused=true;
       updateMusicUI();
+    });
+    audio.addEventListener('waiting',function(){
+      // Buffering do stream, nada a fazer além de aguardar.
+    });
+    audio.addEventListener('stalled',scheduleReconnect);
+    audio.addEventListener('error',scheduleReconnect);
+    audio.addEventListener('ended',function(){
+      // Streams ao vivo normalmente não disparam 'ended', mas por segurança
+      // tratamos como queda de conexão e tentamos reconectar.
+      if(!musicState.paused) scheduleReconnect();
     });
 
     var savedVolume=localStorage.getItem('rv10-music-volume');
-    var savedMode=localStorage.getItem('rv10-music-mode');
     if(savedVolume!==null){
       var v=Math.max(0,Math.min(1,Number(savedVolume)));
       if(isFinite(v)) musicState.volume=v;
     }
-    if(savedMode==='random'||savedMode==='sequence') musicState.mode=savedMode;
 
     updateMusicUI();
 
-    // Música ambiente começa assim que a página abre.
-    playMusicForContext('intro',false);
+    // O rádio começa a tocar assim que a página abre.
+    playRadioStream();
 
     // Fallback obrigatório para políticas de autoplay dos navegadores.
     var resume=function(){
       if(!musicState.started && !musicState.paused){
-        playMusicForContext('intro',false);
+        playRadioStream();
       }
     };
     ['pointerdown','keydown','touchstart'].forEach(function(ev){
@@ -2126,37 +2114,18 @@ async function loadAirportsDatabase(){
     return audio;
   }
 
-  function playMusicForContext(context,forceNew){
+  // Mantido por compatibilidade com os pontos da jornada que sinalizavam a
+  // etapa atual (abertura, carregamento, rota). Como agora há um único rádio
+  // contínuo, apenas garantimos que ele esteja tocando, sem trocar a fonte.
+  function playMusicForContext(context, forceNew){
     var audio=musicState.audio || initMusic();
     if(!audio) return;
-
-    var track=chooseMusicTrack(context);
-    musicState.context=context;
-    musicState.paused=false;
-
-    if(forceNew || musicState.current!==track.name || audio.src.indexOf(track.src)===-1){
-      audio.src=track.src;
-      audio.currentTime=0;
-      musicState.current=track.name;
+    if(forceNew && musicState.paused){
+      musicState.paused=false;
     }
-
-    // Cada etapa é um loop contínuo. No modo aleatório, a seleção só ocorre
-    // quando houver mais de uma faixa no contexto.
-    audio.loop=true;
-    audio.volume=musicState.muted ? 0 : musicState.volume;
-
-    var p=audio.play();
-    if(p && p.then){
-      p.then(function(){
-        musicState.started=true;
-        musicState.paused=false;
-        updateMusicUI();
-      }).catch(function(){
-        musicState.paused=false;
-        updateMusicUI();
-      });
+    if(audio.paused && !musicState.paused){
+      playRadioStream();
     }
-    updateMusicUI();
   }
 
   function initMusicControl(){
@@ -2165,7 +2134,6 @@ async function loadAirportsDatabase(){
 
     var mute=document.getElementById('musicMuteBtn');
     var volume=document.getElementById('musicVolume');
-    var mode=document.getElementById('musicMode');
     var play=document.getElementById('musicPlayBtn');
 
     if(play && !play._bound){
@@ -2173,8 +2141,10 @@ async function loadAirportsDatabase(){
       play.addEventListener('click',function(){
         if(audio.paused){
           musicState.paused=false;
-          var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+          if(musicState.reconnectTimer){clearTimeout(musicState.reconnectTimer);musicState.reconnectTimer=null;}
+          playRadioStream();
         }else{
+          musicState.paused=true;
           audio.pause();
         }
         updateMusicUI();
@@ -2186,8 +2156,8 @@ async function loadAirportsDatabase(){
       mute.addEventListener('click',function(){
         musicState.muted=!musicState.muted;
         audio.volume=musicState.muted ? 0 : musicState.volume;
-        if(!musicState.muted && audio.paused){
-          var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+        if(!musicState.muted && audio.paused && !musicState.paused){
+          playRadioStream();
         }
         updateMusicUI();
       });
@@ -2200,19 +2170,10 @@ async function loadAirportsDatabase(){
         if(musicState.volume>0) musicState.muted=false;
         audio.volume=musicState.muted ? 0 : musicState.volume;
         localStorage.setItem('rv10-music-volume',String(musicState.volume));
-        if(audio.paused && musicState.volume>0){
-          var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+        if(audio.paused && musicState.volume>0 && !musicState.paused){
+          playRadioStream();
         }
         updateMusicUI();
-      });
-    }
-
-    if(mode && !mode._bound){
-      mode._bound=true;
-      mode.addEventListener('change',function(){
-        musicState.mode=mode.value==='random'?'random':'sequence';
-        localStorage.setItem('rv10-music-mode',musicState.mode);
-        playMusicForContext(musicState.context,true);
       });
     }
   }
