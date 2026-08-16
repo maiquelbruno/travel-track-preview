@@ -1,1 +1,162 @@
-[]
+[
+  {
+    "icao": "BR-1101",
+    "name": "Catuleve Airport",
+    "muni": "Aquiraz",
+    "country": "BR",
+    "lat": -3.939457,
+    "lon": -38.378971
+  },
+  {
+    "icao": "SBTE",
+    "name": "Senador Petrônio Portela Airport",
+    "muni": "Teresina",
+    "country": "BR",
+    "lat": -5.06025,
+    "lon": -42.823712
+  },
+  {
+    "icao": "SBSL",
+    "name": "Marechal Cunha Machado International Airport",
+    "muni": "São Luís",
+    "country": "BR",
+    "lat": -2.586386,
+    "lon": -44.235008
+  },
+  {
+    "icao": "SBBE",
+    "name": "Val de Cans/Júlio Cezar Ribeiro International Airport",
+    "muni": "Belém",
+    "country": "BR",
+    "lat": -1.379279,
+    "lon": -48.476207
+  },
+  {
+    "icao": "SBMQ",
+    "name": "Macapá - Alberto Alcolumbre International Airport",
+    "muni": "Macapá",
+    "country": "BR",
+    "lat": 0.050664,
+    "lon": -51.072201
+  },
+  {
+    "icao": "SBBV",
+    "name": "Atlas Brasil Cantanhede International Airport",
+    "muni": "Boa Vista",
+    "country": "BR",
+    "lat": 2.84615,
+    "lon": -60.690648
+  },
+  {
+    "icao": "TGPY",
+    "name": "Maurice Bishop International Airport",
+    "muni": "Saint George's",
+    "country": "GD",
+    "lat": 12.003996,
+    "lon": -61.785302
+  },
+  {
+    "icao": "TFFG",
+    "name": "Grand Case-l'Espérance Airport",
+    "muni": "Grand Case",
+    "country": "MF",
+    "lat": 18.100057,
+    "lon": -63.047444
+  },
+  {
+    "icao": "TFFJ",
+    "name": "St. Jean Airport",
+    "muni": "Gustavia",
+    "country": "BL",
+    "lat": 17.904398,
+    "lon": -62.843333
+  },
+  {
+    "icao": "TFFG",
+    "name": "Grand Case-l'Espérance Airport",
+    "muni": "Grand Case",
+    "country": "MF",
+    "lat": 18.100057,
+    "lon": -63.047444
+  },
+  {
+    "icao": "MBPV",
+    "name": "Providenciales International Airport",
+    "muni": "Providenciales",
+    "country": "TC",
+    "lat": 21.773697,
+    "lon": -72.268321
+  },
+  {
+    "icao": "MYLS",
+    "name": "Stella Maris Airport",
+    "muni": "Stella Maris",
+    "country": "BS",
+    "lat": 23.582317,
+    "lon": -75.268621
+  },
+  {
+    "icao": "BS-0005",
+    "name": "Farmers Cay Airstrip",
+    "muni": "Little Farmers Cay",
+    "country": "BS",
+    "lat": 23.961372,
+    "lon": -76.326206
+  },
+  {
+    "icao": "MYES",
+    "name": "Staniel Cay Airport",
+    "muni": "Staniel Cay",
+    "country": "BS",
+    "lat": 24.1691,
+    "lon": -76.439102
+  },
+  {
+    "icao": "MYNN",
+    "name": "Lynden Pindling International Airport",
+    "muni": "Nassau",
+    "country": "BS",
+    "lat": 25.039,
+    "lon": -77.466202
+  },
+  {
+    "icao": "KFXE",
+    "name": "Fort Lauderdale Executive Airport",
+    "muni": "Fort Lauderdale",
+    "country": "US",
+    "lat": 26.1972999573,
+    "lon": -80.1707000732
+  },
+  {
+    "icao": "FD08",
+    "name": "Antiquers Aerodrome",
+    "muni": "Delray Beach",
+    "country": "US",
+    "lat": 26.465401,
+    "lon": -80.149803
+  },
+  {
+    "icao": "KOBE",
+    "name": "Okeechobee County Airport",
+    "muni": "Okeechobee",
+    "country": "US",
+    "lat": 27.262800216699997,
+    "lon": -80.8498001099
+  },
+  {
+    "icao": "KLAL",
+    "name": "Lakeland Linder International Airport",
+    "muni": "Lakeland",
+    "country": "US",
+    "lat": 27.989267,
+    "lon": -82.020715
+  },
+  {
+    "icao": "KDPA",
+    "name": "Dupage Airport",
+    "muni": "Chicago/West Chicago",
+    "country": "US",
+    "lat": 41.90779877,
+    "lon": -88.24859619
+  }
+]
