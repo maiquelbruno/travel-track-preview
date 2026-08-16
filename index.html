@@ -493,8 +493,12 @@
   .intro-nav,#musicToggle{display:none!important}
   .intro-controls{margin-left:auto}
   .intro-lang{padding:4px}
+  .intro-lang .fi{width:22px;height:22px;border-radius:50%;background-size:cover;display:block}
   .intro-title .accent{color:#fff}
   .intro-title{line-height:.88}
+  @media(min-width:761px){.intro-title{white-space:nowrap}}
+  .intro-left{max-width:840px;align-self:flex-start;padding-top:1.5vh;margin-left:-10px}
+  .intro-card{transform:translateX(18px)}
   .intro-route-strip{gap:18px;max-width:760px}
   .route-destination{gap:10px;min-width:190px}
   .route-destination strong{display:block;white-space:nowrap}
@@ -557,18 +561,15 @@
   <section id="projectIntro" class="loading" aria-label="Apresentação do projeto">
     <div class="intro-wrap">
       <div class="intro-top">
-        <div class="intro-brand">
-          <span>RV-10 · World Flight</span>
-        </div>
         <div class="intro-controls">
-          <div class="intro-lang" role="group" aria-label="Idioma"><button id="langPt" class="active" type="button" title="Português" aria-label="Português">🇧🇷</button><button id="langEn" type="button" title="English" aria-label="English">🇺🇸</button></div>
+          <div class="intro-lang" role="group" aria-label="Idioma"><button id="langPt" class="active" type="button" title="Português" aria-label="Português"><span class="fi fi-br intro-lang-flag"></span></button><button id="langEn" type="button" title="English" aria-label="English"><span class="fi fi-us intro-lang-flag"></span></button></div>
         </div>
       </div>
 
       <div class="intro-main">
         <div class="intro-left">
           <div class="intro-kicker" data-pt="Uma jornada real, recriada no mundo virtual" data-en="A real journey, recreated in the virtual world">Uma jornada real, recriada no mundo virtual</div>
-          <h2 class="intro-title" data-pt="Volta ao<br><span>Mundo</span><span>RV-10 · MICROSOFT FLIGHT SIMULATOR 2020</span>" data-en="Around the<br><span>World</span><span>RV-10 · MICROSOFT FLIGHT SIMULATOR 2020</span>">Volta ao<br><span>Mundo</span><span>RV-10 · MICROSOFT FLIGHT SIMULATOR 2020</span></h2>
+          <h2 class="intro-title" data-pt="Volta ao Mundo<span>RV-10 · MICROSOFT FLIGHT SIMULATOR 2020</span>" data-en="Around the World<span>RV-10 · MICROSOFT FLIGHT SIMULATOR 2020</span>">Volta ao Mundo<span>RV-10 · MICROSOFT FLIGHT SIMULATOR 2020</span></h2>
           <p class="intro-lead" data-pt="Um projeto inspirado em uma grande jornada da aviação e transformado em uma experiência virtual. A bordo de um RV-10, acompanhe no Microsoft Flight Simulator 2020 a reprodução dessa volta ao mundo, etapa por etapa, pouso por pouso." data-en="A project inspired by a remarkable aviation journey and transformed into a virtual experience. Aboard an RV-10, follow the recreation of this round-the-world flight in Microsoft Flight Simulator 2020, one leg and one landing at a time.">Um projeto inspirado em uma grande jornada da aviação e transformado em uma experiência virtual. A bordo de um RV-10, acompanhe no Microsoft Flight Simulator 2020 a reprodução dessa volta ao mundo, etapa por etapa, pouso por pouso.</p>
 
           <div class="intro-route-strip">
