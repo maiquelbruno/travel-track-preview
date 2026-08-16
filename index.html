@@ -260,6 +260,8 @@
   }
 
 
+  #musicToggle,.intro-nav{display:none!important;}
+
   /* Preview has no editor: the public page is read-only. */
   #topbar,#searchPanel,#logPanel,#gearBtn,#settingsPanel,#playBtn,#playbackReturnBtn,#playbackStopBtn{display:none!important;}
   #app{cursor:default;}
@@ -374,27 +376,24 @@
   }
   .route-point{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
   .route-point small{display:block;font-size:8px;color:rgba(255,255,255,.48);letter-spacing:.08em;margin-top:3px}
-  .route-point .pin{font-size:18px}.pin-svg{width:22px;height:22px;display:grid;place-items:center;color:#f4c51b}.pin-svg svg{width:22px;height:22px}.route-globe svg{width:22px;height:22px;display:block}.world-end{gap:10px}
+  .route-point .pin{font-size:18px}
   .route-line{height:1px;flex:1;min-width:50px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.7) 0 7px,transparent 7px 14px)}
-  .route-destination{display:flex;align-items:center;gap:8px}
-  .route-globe{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(15,94,118,.52);border:1px solid rgba(152,222,234,.35);font-size:19px}
+  .route-destination{display:flex;align-items:center;gap:14px;white-space:nowrap}
+  .route-globe{width:34px;flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(15,94,118,.52);border:1px solid rgba(152,222,234,.35);font-size:19px}
 
   .intro-card{
-    align-self:center;justify-self:end;width:min(100%,470px);box-sizing:border-box;padding:28px 30px;
+    align-self:center;justify-self:end;width:min(100%,430px);box-sizing:border-box;padding:24px 25px;
     border:1px solid rgba(255,255,255,.26);border-radius:22px;background:linear-gradient(145deg,rgba(8,26,39,.78),rgba(5,17,27,.52));
     backdrop-filter:blur(18px);box-shadow:0 18px 50px rgba(0,0,0,.25)
   }
   .intro-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.14)}
   .intro-card-title{font-size:12px;font-weight:850}.intro-card-title-en{font-size:10px;color:rgba(255,255,255,.52)}
   .intro-card-bar{height:3px;width:82px;border-radius:99px;background:linear-gradient(90deg,#2ba8d4 0 55%,#f4c51b 55% 100%);margin-top:7px}
-  .intro-card p{font-size:12px;line-height:1.78;color:rgba(255,255,255,.72);margin:17px 0 0}
+  .intro-card p{font-size:12px;line-height:1.72;color:rgba(255,255,255,.72);margin:17px 0 0}
   .intro-card p strong{color:#fff}
-  .intro-credit{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);font-size:10px;line-height:1.6;color:rgba(255,255,255,.55)}
+  .intro-credit{margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:10px;line-height:1.6;color:rgba(255,255,255,.55)}
   .intro-credit strong{color:#fff}
-  .intro-signature{font-size:18px;font-family:cursive;font-style:italic;color:#fff;margin-top:3px}
-.intro-credits{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12)}
-  .intro-credit-item{min-width:0}.intro-credit-label{font-size:8px;line-height:1.35;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45)}
-  .intro-credit-name{margin-top:6px;font-size:14px;font-weight:800;color:#fff;line-height:1.25}.intro-credit-name span{display:block;font-size:9px;font-weight:500;color:rgba(255,255,255,.52);margin-top:4px}
+  .intro-signature{font-size:20px;font-family:cursive;font-style:italic;color:#fff;margin-top:3px}
 
   .intro-stats{
     position:absolute;left:clamp(22px,4vw,62px);bottom:44px;z-index:3;display:grid;grid-template-columns:1.15fr 1fr 1fr;
@@ -415,7 +414,7 @@
   #projectIntro.ready .intro-main,#projectIntro.ready .intro-stats{animation:introRise .8s ease .08s both}
   @keyframes introRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 
-  /* Transition: illustrated RV-10 + runway + globe */
+  /* Transition: clean cinematic takeoff using the same aircraft icon as the Track Movie */
   #flightTransition{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;overflow:hidden;
     background:radial-gradient(circle at 50% 24%,#15364a 0,#081923 45%,#02080c 100%);color:#fff;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .55s ease,visibility .55s ease}
   #flightTransition.active{opacity:1;visibility:visible;pointer-events:auto}
@@ -424,54 +423,45 @@
   .transition-grid{position:absolute;left:0;right:0;bottom:24%;height:1px;background:rgba(255,255,255,.18);box-shadow:0 28px 0 rgba(255,255,255,.025),0 -50px 90px rgba(255,255,255,.05)}
   .transition-runway{position:absolute;z-index:2;bottom:24%;left:6%;width:61vw;max-width:980px;height:4px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.9) 0 42px,transparent 42px 84px);opacity:.8}
   .transition-runway::after{content:"";position:absolute;left:0;right:0;top:12px;height:1px;background:rgba(255,255,255,.18)}
-  .transition-plane-svg::after{content:"";position:absolute;left:8px;top:42%;width:18px;height:18px;border-radius:50%;border:1px solid rgba(244,197,27,.45);box-shadow:0 0 12px rgba(244,197,27,.22);opacity:.35}
   .transition-tower{position:absolute;z-index:3;left:4%;bottom:24%;width:74px;height:155px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.38))}
   .transition-tower .tower-body{position:absolute;left:28px;bottom:0;width:17px;height:122px;background:linear-gradient(90deg,#aebabc,#fff 48%,#7c8a8c);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%)}
   .transition-tower .tower-top{position:absolute;left:15px;bottom:113px;width:43px;height:21px;border-radius:6px 6px 2px 2px;background:linear-gradient(#e8efef,#778789)}
   .transition-tower .tower-glass{position:absolute;left:20px;bottom:117px;width:33px;height:9px;border-radius:3px;background:#173f52}
   .transition-tower .tower-light{position:absolute;left:34px;bottom:137px;width:5px;height:5px;border-radius:50%;background:#f4c51b;box-shadow:0 0 13px #f4c51b;animation:towerBlink 1.4s infinite}
   .transition-sign{position:absolute;z-index:4;left:7%;bottom:calc(24% + 30px);display:flex;align-items:center;gap:9px;padding:8px 12px;border:1px solid rgba(255,255,255,.18);border-radius:9px;background:rgba(2,9,14,.48);backdrop-filter:blur(9px);font-size:9px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
-  .transition-flag{width:24px;height:17px;display:grid;place-items:center}.transition-flag svg{width:24px;height:17px;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}.transition-route{position:absolute;z-index:1;left:9%;bottom:calc(24% + 10px);width:60vw;max-width:900px;height:1px;transform:rotate(-2deg);background:repeating-linear-gradient(90deg,rgba(244,197,27,.75) 0 7px,transparent 7px 15px);opacity:.38}
-  .transition-plane-svg{position:absolute;z-index:7;left:7%;bottom:calc(24% + 2px);width:150px;height:94px;opacity:0;filter:drop-shadow(0 12px 16px rgba(0,0,0,.55));transform-origin:42% 58%;will-change:transform,opacity}
-  #flightTransition.active .transition-plane-svg{animation:rv10Takeoff 4.9s cubic-bezier(.22,.66,.16,1) .12s forwards}
-  @keyframes rv10Takeoff{
-    0%{opacity:0;transform:translate3d(0,0,0) rotate(0deg) scale(.62)}
-    6%{opacity:1;transform:translate3d(2vw,0,0) rotate(0deg) scale(.70)}
-    28%{transform:translate3d(17vw,0,0) rotate(0deg) scale(.86)}
-    48%{transform:translate3d(34vw,-2vh,0) rotate(-4deg) scale(1.00)}
-    64%{transform:translate3d(48vw,-13vh,0) rotate(-11deg) scale(.96)}
-    80%{transform:translate3d(63vw,-27vh,0) rotate(-15deg) scale(.82)}
-    92%{transform:translate3d(75vw,-33vh,0) rotate(-8deg) scale(.68);opacity:1}
-    100%{transform:translate3d(86vw,-36vh,0) rotate(-2deg) scale(.54);opacity:0}
+  .transition-flag{font-size:14px}.transition-route{position:absolute;z-index:1;left:9%;bottom:calc(24% + 10px);width:60vw;max-width:900px;height:1px;transform:rotate(-2deg);background:repeating-linear-gradient(90deg,rgba(244,197,27,.75) 0 7px,transparent 7px 15px);opacity:.38}
+  .transition-plane-track{position:absolute;z-index:7;left:8%;bottom:calc(24% + 2px);width:84px;height:84px;opacity:0;filter:drop-shadow(0 9px 13px rgba(0,0,0,.45));transform-origin:50% 50%;will-change:transform,opacity}
+  .transition-plane-track img{display:block;width:100%;height:100%;object-fit:contain;transform:rotate(90deg);transform-origin:50% 50%}
+  #flightTransition.active .transition-plane-track{animation:trackTakeoff 4.85s cubic-bezier(.18,.72,.18,1) .12s forwards}
+  @keyframes trackTakeoff{
+    0%{opacity:0;transform:translate3d(0,0,0) rotate(0deg) scale(.55)}
+    7%{opacity:1}
+    38%{transform:translate3d(20vw,0,0) rotate(0deg) scale(.72)}
+    55%{transform:translate3d(35vw,-6vh,0) rotate(-7deg) scale(.78)}
+    72%{transform:translate3d(52vw,-20vh,0) rotate(-13deg) scale(.72)}
+    88%{opacity:1;transform:translate3d(68vw,-31vh,0) rotate(-8deg) scale(.62)}
+    100%{opacity:0;transform:translate3d(79vw,-38vh,0) rotate(-2deg) scale(.52)}
   }
-
-  .transition-globe{position:absolute;z-index:4;right:7%;top:17%;width:min(34vw,440px);aspect-ratio:1;border-radius:50%;
+  .transition-globe{position:absolute;z-index:4;right:7%;top:17%;width:min(32vw,410px);aspect-ratio:1;border-radius:50%;
     background:radial-gradient(circle at 34% 28%,rgba(177,228,238,.42),rgba(37,104,112,.17) 33%,rgba(2,24,31,.91) 72%);
     box-shadow:inset -38px -25px 75px rgba(0,0,0,.65),0 0 0 1px rgba(170,224,231,.18),0 0 90px rgba(77,172,185,.15);
     opacity:0;transform:scale(.72) translateY(20px);overflow:hidden}
-  #flightTransition.active .transition-globe{animation:globeReveal 1.2s ease 2.55s forwards}
+  #flightTransition.active .transition-globe{animation:globeReveal 1.35s ease 2.7s forwards}
   @keyframes globeReveal{to{opacity:1;transform:scale(1) translateY(0)}}
   .transition-globe::before,.transition-globe::after{content:"";position:absolute;inset:9%;border:1px solid rgba(181,231,235,.18);border-radius:50%;transform:rotate(18deg) scaleX(.45)}
   .transition-globe::after{transform:rotate(-28deg) scaleX(.62)}
   .globe-land{position:absolute;inset:0;opacity:.38;background:
     radial-gradient(ellipse at 32% 37%,#76bb8a 0 5%,transparent 6%),radial-gradient(ellipse at 43% 58%,#78b77f 0 7%,transparent 8%),
     radial-gradient(ellipse at 63% 35%,#83bd8a 0 6%,transparent 7%),radial-gradient(ellipse at 73% 57%,#74ae7b 0 5%,transparent 6%)}
-  .globe-route{position:absolute;left:12%;top:50%;width:76%;height:24%;border:2px solid rgba(244,197,27,.9);border-left-color:transparent;border-bottom-color:transparent;border-radius:50%;transform:rotate(-12deg);box-shadow:0 -2px 12px rgba(244,197,27,.22)}
-  .globe-plane-svg{position:absolute;z-index:2;left:14%;top:47%;width:58px;height:36px;opacity:0;filter:drop-shadow(0 5px 9px rgba(0,0,0,.5))}
-  #flightTransition.active .globe-plane-svg{animation:globePlane 2.45s linear 2.95s forwards}
-  @keyframes globePlane{0%{opacity:0;transform:translate3d(0,0,0) rotate(-10deg)}8%{opacity:1}34%{transform:translate3d(80px,-34px,0) rotate(10deg)}58%{transform:translate3d(165px,-18px,0) rotate(35deg)}80%{transform:translate3d(245px,18px,0) rotate(68deg)}100%{opacity:0;transform:translate3d(310px,32px,0) rotate(88deg)}}
+  .globe-route{position:absolute;left:12%;top:50%;width:76%;height:24%;border:2px solid rgba(244,197,27,.9);border-left-color:transparent;border-bottom-color:transparent;border-radius:50%;transform:rotate(-12deg);box-shadow:0 -2px 12px rgba(244,197,27,.22);animation:routePulse 2.8s ease-in-out infinite}
+  @keyframes routePulse{0%,100%{opacity:.35;transform:rotate(-12deg) scale(.98)}50%{opacity:.85;transform:rotate(-12deg) scale(1.02)}}
   .transition-content{position:relative;z-index:8;text-align:center;padding:24px;transform:translateY(10px);opacity:0;transition:opacity .55s ease .15s,transform .55s ease .15s}
   #flightTransition.active .transition-content{opacity:1;transform:none}
   .transition-kicker{font-size:10px;font-weight:850;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.55)}
   .transition-location{margin-top:12px;font-size:clamp(30px,5vw,64px);font-weight:850;letter-spacing:-.045em;text-transform:uppercase;text-shadow:0 8px 30px rgba(0,0,0,.38)}
   .transition-status{margin-top:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.58)}
-
-  .transition-runway::before{content:"";position:absolute;left:0;top:-22px;width:180px;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);opacity:0;transform:translateX(-30px)}
-  #flightTransition.active .transition-runway::before{animation:runwayGlow 1.8s linear .35s infinite}
-  @keyframes runwayGlow{0%{opacity:0;transform:translateX(-30px)}15%{opacity:.65}100%{opacity:0;transform:translateX(900px)}}
-  .transition-phase{position:absolute;z-index:8;left:7%;bottom:calc(24% - 48px);display:flex;gap:24px;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.42)}
-  .transition-phase span{display:flex;align-items:center;gap:7px}.transition-phase b{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(244,197,27,.95);color:#0a1720;font-size:8px}
   @keyframes towerBlink{0%,72%,100%{opacity:.35}76%,88%{opacity:1}}
+
 
   @media(max-width:900px){
     .intro-nav{display:none}.intro-main{grid-template-columns:1fr;align-content:center}
@@ -487,15 +477,14 @@
     .intro-stat{padding:11px 10px}.intro-stat strong{font-size:18px}.intro-stat span{font-size:7px}
     .intro-footer{display:none}
     .transition-runway{left:7%;width:80vw;bottom:21%}.transition-tower{left:1%;bottom:21%;transform:scale(.72);transform-origin:bottom left}
-    .transition-sign{left:9%;bottom:calc(21% + 28px);font-size:8px}.transition-plane-svg{left:8%;bottom:calc(21% + 4px);width:78px;height:50px}
-    .transition-globe{right:-4%;top:17%;width:55vw}.globe-plane-svg{width:42px;height:27px}.transition-phase{display:none}
-    @keyframes rv10Takeoff{
-      0%{opacity:0;transform:translate(0,0) rotate(0) scale(.65)}7%{opacity:1}
-      22%{transform:translate(11vw,0) rotate(0) scale(.74)}38%{transform:translate(25vw,-1vh) rotate(-2deg) scale(.82)}
-      53%{transform:translate(39vw,-12vh) rotate(-11deg) scale(.78)}67%{transform:translate(51vw,-24vh) rotate(-17deg) scale(.66)}
-      82%{transform:translate(61vw,-28vh) rotate(-7deg) scale(.54)}100%{transform:translate(72vw,-28vh) rotate(4deg) scale(.42);opacity:0}
+    .transition-sign{left:9%;bottom:calc(21% + 28px);font-size:8px}.transition-plane-track{left:7%;bottom:calc(21% + 2px);width:68px;height:68px}
+    .transition-globe{right:-4%;top:17%;width:55vw}
+    @keyframes trackTakeoff{
+      0%{opacity:0;transform:translate3d(0,0,0) rotate(0deg) scale(.52)}7%{opacity:1}
+      38%{transform:translate3d(19vw,0,0) rotate(0deg) scale(.68)}55%{transform:translate3d(32vw,-7vh,0) rotate(-7deg) scale(.72)}
+      72%{transform:translate3d(46vw,-19vh,0) rotate(-13deg) scale(.66)}88%{opacity:1;transform:translate3d(58vw,-28vh,0) rotate(-8deg) scale(.58)}
+      100%{opacity:0;transform:translate3d(67vw,-34vh,0) rotate(-2deg) scale(.5)}
     }
-    @keyframes globePlane{0%{opacity:0;transform:translate(0,0) rotate(-10deg)}12%{opacity:1}42%{transform:translate(18vw,-7vh) rotate(15deg)}72%{transform:translate(34vw,1vh) rotate(65deg)}100%{opacity:0;transform:translate(49vw,4vh) rotate(100deg)}}
   }
 
 </style>
@@ -512,17 +501,7 @@
           </span>
           <span>RV-10 · World Flight</span>
         </div>
-        <div class="intro-nav" aria-hidden="true"><span>Aviação</span><span>Exploração</span><span>Simulador</span><span>MSFS 2020</span></div>
         <div class="intro-controls">
-          <button id="musicToggle" type="button" aria-label="Ativar música" aria-pressed="false" title="Música ambiente">
-            <span class="music-icon">
-              <svg class="music-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l4 3V7L7 10H4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15 9.5c1.2 1.1 1.2 3.9 0 5M17.7 7c2.7 2.5 2.7 7.5 0 10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-              <svg class="music-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l4 3V7L7 10H4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m16 9 5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-            </span>
-            <span class="music-meta"><span class="music-title">Música ambiente</span><span class="music-sub">Trilha cinematográfica</span></span>
-            <input id="musicVolume" type="range" min="0" max="100" value="58" aria-label="Volume da música">
-            <span class="music-play">▶</span>
-          </button>
           <div class="intro-lang" role="group" aria-label="Idioma"><button id="langPt" class="active" type="button">PT</button><button id="langEn" type="button">EN</button></div>
         </div>
       </div>
@@ -534,9 +513,9 @@
           <p class="intro-lead" data-pt="Um projeto inspirado em uma grande jornada da aviação e transformado em uma experiência virtual. A bordo de um RV-10, acompanhe no Microsoft Flight Simulator 2020 a reprodução dessa volta ao mundo, etapa por etapa, pouso por pouso." data-en="A project inspired by a remarkable aviation journey and transformed into a virtual experience. Aboard an RV-10, follow the recreation of this round-the-world flight in Microsoft Flight Simulator 2020, one leg and one landing at a time.">Um projeto inspirado em uma grande jornada da aviação e transformado em uma experiência virtual. A bordo de um RV-10, acompanhe no Microsoft Flight Simulator 2020 a reprodução dessa volta ao mundo, etapa por etapa, pouso por pouso.</p>
 
           <div class="intro-route-strip">
-            <div class="route-point"><span class="pin pin-svg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="9" r="2.3" fill="currentColor"/></svg></span><div><strong>Aquiraz / Fortaleza</strong><small data-pt="Partida · Brasil" data-en="Departure · Brazil">Partida · Brasil</small></div></div>
+            <div class="route-point"><span class="pin">📍</span><div><strong>Aquiraz / Fortaleza</strong><small data-pt="Partida · Brasil" data-en="Departure · Brazil">Partida · Brasil</small></div></div>
             <div class="route-line"></div>
-            <div class="route-destination world-end"><div><strong data-pt="O Mundo" data-en="The World">O Mundo</strong><small data-pt="Uma etapa de cada vez" data-en="One leg at a time">Uma etapa de cada vez</small></div><span class="route-globe" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 16h26M16 2c4 4 6 8 6 14s-2 10-6 14M16 2c-4 4-6 8-6 14s2 10 6 14M6 8c3 2 6 3 10 3s7-1 10-3M6 24c3-2 6-3 10-3s7 1 10 3" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".8"/></svg></span></div>
+            <div class="route-destination"><div><strong data-pt="O Mundo" data-en="The World">O Mundo</strong><small data-pt="Uma etapa de cada vez" data-en="One leg at a time">Uma etapa de cada vez</small></div><span class="route-globe" aria-hidden="true">◎</span></div>
           </div>
 
           <div class="intro-actions"><button id="startJourneyBtn" type="button"><span data-pt="Iniciar viagem" data-en="Start journey">Iniciar viagem</span><span class="arrow">→</span></button></div>
@@ -549,10 +528,7 @@
           </div>
           <p data-pt="Esta é a minha reprodução virtual da volta ao mundo a bordo de um RV-10, realizada no <strong>Microsoft Flight Simulator 2020</strong>. O projeto toma como referência a jornada real idealizada e conduzida por <strong>Alexandre Bacana</strong>." data-en="This is my virtual recreation of a round-the-world flight aboard an RV-10, created in <strong>Microsoft Flight Simulator 2020</strong>. The project takes as reference the real journey conceived and flown by <strong>Alexandre Bacana</strong>.">Esta é a minha reprodução virtual da volta ao mundo a bordo de um RV-10, realizada no <strong>Microsoft Flight Simulator 2020</strong>. O projeto toma como referência a jornada real idealizada e conduzida por <strong>Alexandre Bacana</strong>.</p>
           <p data-pt="Assim como na vida real, a rota pode sofrer adaptações por autorizações, meteorologia, manutenção e imprevistos. Por isso, o percurso virtual acompanha o planejamento original, mas pode ser ajustado conforme a evolução da jornada." data-en="As in real life, the route can change because of clearances, weather, maintenance and unforeseen events. The virtual route therefore follows the original plan while allowing adjustments as the journey evolves.">Assim como na vida real, a rota pode sofrer adaptações por autorizações, meteorologia, manutenção e imprevistos. Por isso, o percurso virtual acompanha o planejamento original, mas pode ser ajustado conforme a evolução da jornada.</p>
-          <div class="intro-credits">
-            <div class="intro-credit-item"><div class="intro-credit-label" data-pt="Idealização e condução da jornada real" data-en="Real journey concept and flight">Idealização e condução da jornada real</div><div class="intro-credit-name">Alexandre Frota (Alex Bacana)<span>Projeto real</span></div></div>
-            <div class="intro-credit-item"><div class="intro-credit-label" data-pt="Idealização e reprodução virtual" data-en="Virtual project and recreation">Idealização e reprodução virtual</div><div class="intro-credit-name">Cmte Maiquel Bruno<span>MSFS 2020</span></div></div>
-          </div>
+          <div class="intro-credit" data-pt="Idealização e reprodução virtual" data-en="Virtual project and recreation">Idealização e reprodução virtual<div class="intro-signature">Cmte Maiquel Bruno</div><div style="margin-top:4px;color:rgba(255,255,255,.48);font-size:9px;letter-spacing:.05em">MSFS 2020 · reprodução virtual</div></div>
         </aside>
       </div>
 
@@ -576,26 +552,10 @@
     <div class="transition-runway"></div>
     <div class="transition-route"></div>
     <div class="transition-tower"><span class="tower-body"></span><span class="tower-top"></span><span class="tower-glass"></span><span class="tower-light"></span></div>
-    <div class="transition-sign"><span class="transition-flag" aria-hidden="true"><svg viewBox="0 0 32 22"><rect width="32" height="22" rx="2" fill="#16823b"/><path d="M16 3.2 27.5 11 16 18.8 4.5 11Z" fill="#f4c51b"/><circle cx="16" cy="11" r="4.4" fill="#245ca5"/><path d="M12.3 10.1c2.2-.9 4.3-.8 7.2.2" fill="none" stroke="#fff" stroke-width=".7" opacity=".9"/></svg></span><span id="transitionOriginLabel">AQUIRAZ / FORTALEZA · BRASIL</span></div>
-    <div class="transition-phase"><span><b>1</b> Origem</span><span><b>2</b> Acelerando</span><span><b>3</b> Decolagem</span><span><b>4</b> Rumo ao mundo</span></div>
-    <div class="transition-plane-svg" aria-hidden="true">
-      <svg viewBox="0 0 160 100" role="img" class="rv10-illustration">
-        <defs><linearGradient id="rv10Body" x1="0" x2="1"><stop offset="0" stop-color="#f8fbfb"/><stop offset=".52" stop-color="#d8e5e7"/><stop offset="1" stop-color="#fff"/></linearGradient><linearGradient id="rv10Blue" x1="0" x2="1"><stop offset="0" stop-color="#153c75"/><stop offset="1" stop-color="#2d78b8"/></linearGradient></defs>
-        <path d="M17 52 C36 42 61 39 92 43 L137 48 C146 49 149 54 140 58 L92 62 C59 65 34 62 17 56 Z" fill="url(#rv10Body)" stroke="#9eafb4" stroke-width="1.6"/>
-        <path d="M18 52 C50 50 88 50 141 53 L140 58 C85 59 49 59 18 56 Z" fill="url(#rv10Blue)"/>
-        <path d="M66 43 L43 16 L52 14 L83 43 Z" fill="#eef5f5" stroke="#9eafb4" stroke-width="1.3"/>
-        <path d="M74 61 L45 84 L55 86 L89 62 Z" fill="#edf4f4" stroke="#9eafb4" stroke-width="1.3"/>
-        <path d="M116 48 L133 27 L141 29 L132 52 Z" fill="#edf4f4" stroke="#9eafb4" stroke-width="1.2"/>
-        <path d="M30 50 L13 41 L11 45 L22 54 Z" fill="#234d86"/>
-        <circle cx="23" cy="54" r="5" fill="#13263b" stroke="#e1ebed" stroke-width="2"/><circle cx="23" cy="54" r="1.5" fill="#bcdbe7"/>
-        <path d="M102 45 L110 36 L119 38 L111 49 Z" fill="#b9d8df" stroke="#6c858d" stroke-width="1"/>
-        <path d="M97 61 L107 67 L115 65 L107 59 Z" fill="#b9d8df" stroke="#6c858d" stroke-width="1"/>
-        <path d="M126 50 L136 51 L140 54 L135 56 L126 55 Z" fill="#f1c62a"/>
-      </svg>
-    </div>
+    <div class="transition-sign"><span class="transition-flag">🇧🇷</span><span id="transitionOriginLabel">AQUIRAZ / FORTALEZA · BRASIL</span></div>
+    <div class="transition-plane-track" aria-hidden="true"><img id="transitionPlaneImg" alt="" decoding="async"></div>
     <div class="transition-globe">
       <span class="globe-land"></span><span class="globe-route"></span>
-      <svg class="globe-plane-svg" viewBox="0 0 160 100" aria-hidden="true"><path d="M17 52 C36 42 61 39 92 43 L137 48 C146 49 149 54 140 58 L92 62 C59 65 34 62 17 56 Z" fill="#e9f0f1" stroke="#9eafb4" stroke-width="1.5"/><path d="M66 43 L43 16 L52 14 L83 43 Z" fill="#edf4f4"/><path d="M74 61 L45 84 L55 86 L89 62 Z" fill="#edf4f4"/><path d="M18 52 C50 50 88 50 141 53 L140 58 C85 59 49 59 18 56 Z" fill="#245c9c"/></svg>
     </div>
     <div class="transition-content">
       <div class="transition-kicker" data-pt="Preparando a decolagem" data-en="Preparing for takeoff">Preparando a decolagem</div>
@@ -1887,7 +1847,6 @@ async function loadAirportsDatabase(){
     try{localStorage.setItem('rv10-intro-lang',lang);}catch(e){}
   }
   function prepareProjectIntro(){
-    initMusicControl();
     var root=document.getElementById('projectIntro');if(!root)return;
     var stops=document.getElementById('introStops'),distance=document.getElementById('introDistance');
     var progress=document.getElementById('introProgress'),progressBar=document.getElementById('introProgressBar');
@@ -1918,13 +1877,14 @@ async function loadAirportsDatabase(){
       var country=origin.country?(' · '+origin.country):'';
       location.textContent=String(place).toUpperCase()+country.toUpperCase();
     }
+    var transitionPlaneImg=document.getElementById('transitionPlaneImg');
+    if(transitionPlaneImg) transitionPlaneImg.src=PLANE_ICON_SRC;
     var originLabel=document.getElementById('transitionOriginLabel');
     if(originLabel){
       var muni=String(origin.muni||origin.name||origin.icao||'Aquiraz / Fortaleza');
       var pretty=/aquiraz/i.test(muni)?'AQUIRAZ / FORTALEZA':muni.toUpperCase();
       originLabel.textContent=pretty+' · BRASIL';
     }
-    var m=createIntroMusic();if(m)m.start();
     var mapStart=[Number(origin.lat),Number(origin.lon)];
     if(Number.isFinite(mapStart[0])&&Number.isFinite(mapStart[1])){
       try{map.setView(mapStart,5,{animate:false});}catch(e){}
@@ -1936,52 +1896,7 @@ async function loadAirportsDatabase(){
       transition.classList.remove('active');
       transition.setAttribute('aria-hidden','true');
       setTimeout(function(){playRoute();},220);
-    },5600);
-  }
-
-  // ---------- Background music ----------
-  var introMusic=null;
-  function createIntroMusic(){
-    if(introMusic)return introMusic;
-    var AC=window.AudioContext||window.webkitAudioContext;
-    if(!AC)return null;
-    var ctx=new AC();
-    var master=ctx.createGain();master.gain.value=.084;master.connect(ctx.destination);
-    var filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=1800;filter.Q.value=.35;filter.connect(master);
-    var comp=ctx.createDynamicsCompressor();comp.threshold.value=-24;comp.knee.value=18;comp.ratio.value=5;comp.attack.value=.01;comp.release.value=.35;comp.connect(filter);
-    var notes=[146.83,174.61,196,220,261.63,293.66,329.63,392];
-    var chordSets=[[146.83,220,293.66],[174.61,261.63,329.63],[196,293.66,392],[220,329.63,440]];
-    var state={ctx:ctx,master:master,filter:filter,comp:comp,muted:false,timer:null,step:0,started:false};
-    function pulse(){
-      var now=ctx.currentTime;var set=chordSets[state.step%chordSets.length];
-      set.forEach(function(freq,i){
-        var o=ctx.createOscillator(),g=ctx.createGain();o.type=i===0?'sine':'triangle';o.frequency.value=freq;g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(.13/(i+1),now+.7);g.gain.exponentialRampToValueAtTime(.0001,now+3.8);o.connect(g).connect(comp);o.start(now);o.stop(now+4.1);
-      });
-      var bell=ctx.createOscillator(),bg=ctx.createGain();bell.type='sine';bell.frequency.value=notes[(state.step*2)%notes.length]*2;bg.gain.setValueAtTime(0,now);bg.gain.linearRampToValueAtTime(.045,now+.08);bg.gain.exponentialRampToValueAtTime(.0001,now+1.6);bell.connect(bg).connect(comp);bell.start(now);bell.stop(now+1.7);
-      state.step++;state.timer=window.setTimeout(pulse,4200);
-    }
-    state.start=function(){if(ctx.state==='suspended')ctx.resume();if(!state.timer)pulse();state.started=true;document.getElementById('musicToggle').classList.add('is-playing');};
-    state.volume=.084;
-    state.setVolume=function(v){state.volume=Math.max(0,Math.min(1,Number(v)||0));if(!state.muted)master.gain.setTargetAtTime(state.volume,ctx.currentTime,.08);};
-    state.toggle=function(){state.muted=!state.muted;master.gain.setTargetAtTime(state.muted?0:state.volume,ctx.currentTime,.08);var b=document.getElementById('musicToggle');b.classList.toggle('is-muted',state.muted);b.setAttribute('aria-pressed',String(state.muted));b.setAttribute('aria-label',state.muted?'Ativar música':'Mutar música');var play=b.querySelector('.music-play');if(play)play.textContent=state.muted?'▶':'Ⅱ';};
-    introMusic=state;return state;
-  }
-  function initMusicControl(){
-    var b=document.getElementById('musicToggle');if(!b||b._bound)return;
-    b._bound=true;
-    var volume=document.getElementById('musicVolume');
-    b.addEventListener('click',function(e){
-      if(e.target===volume)return;
-      var m=createIntroMusic();if(!m)return;
-      if(!m.started)m.start();else m.toggle();
-    });
-    if(volume)volume.addEventListener('input',function(e){
-      e.stopPropagation();
-      var m=createIntroMusic();if(!m)return;
-      var v=Number(e.target.value)/100;
-      m.setVolume(v*.145);
-      if(!m.started && v>0)m.start();
-    });
+    },5250);
   }
 
   // ---------- Init ----------
