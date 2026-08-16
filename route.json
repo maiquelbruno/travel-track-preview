@@ -166,5 +166,13 @@
     "country": "US",
     "lat": 43.98440170288086,
     "lon": -88.55699920654297
+  },
+  {
+    "icao": "CYAM",
+    "name": "Sault Ste Marie Airport",
+    "muni": "Sault Ste Marie",
+    "country": "CA",
+    "lat": 46.483216,
+    "lon": -84.508467
   }
 ]
