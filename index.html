@@ -511,6 +511,14 @@
     background:rgba(255,255,255,.13);color:#fff;cursor:pointer;
     display:grid;place-items:center;font-size:13px;
   }
+  #musicPlayBtn{
+    width:27px;height:27px;border-radius:50%;background:rgba(255,255,255,.92);color:#09131c;
+    display:grid;place-items:center;font-size:10px;flex:0 0 auto;border:0;cursor:pointer;
+  }
+  #musicPlayBtn:hover{background:#fff;transform:scale(1.04)}
+  #musicPlayBtn:focus-visible,#musicMuteBtn:focus-visible,#musicVolume:focus-visible,#musicMode:focus-visible{
+    outline:2px solid rgba(255,255,255,.7);outline-offset:2px;
+  }
   #musicMuteBtn:hover{background:rgba(255,255,255,.22)}
   .music-panel-meta{min-width:118px;line-height:1.1}
   .music-panel-meta strong{display:block;font-size:8px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
@@ -532,6 +540,9 @@
   }
 
 </style>
+  <link rel="preload" as="audio" href="audio/Horizonte.wav">
+  <link rel="preload" as="audio" href="audio/EmEspera.wav">
+  <link rel="preload" as="audio" href="audio/VooMundial.wav">
 </head>
 <body>
 <div id="app">
@@ -617,12 +628,15 @@
   </section>
 
   <div id="musicPanel" aria-label="Controle de música">
+    <button id="musicPlayBtn" type="button" aria-label="Pausar música" title="Pausar / tocar música">
+      <span id="musicPlayIcon">▶</span>
+    </button>
     <button id="musicMuteBtn" type="button" aria-label="Mutar música" title="Mutar / ativar música">
       <span id="musicMuteIcon">🔊</span>
     </button>
     <div class="music-panel-meta">
-      <strong id="musicTrackName">Wildfire · Jessie Villa</strong>
-      <small id="musicContext">Abertura</small>
+      <strong id="musicTrackName">Horizonte · ambiente</strong>
+      <small id="musicContext">Abertura · ambiente</small>
     </div>
     <input id="musicVolume" type="range" min="0" max="100" value="42" aria-label="Volume da música">
     <select id="musicMode" aria-label="Modo da música">
@@ -630,7 +644,7 @@
       <option value="random">Aleatório</option>
     </select>
   </div>
-  <audio id="musicAudio" preload="auto"></audio>
+  <audio id="musicAudio" preload="auto" crossorigin="anonymous"></audio>
   <div id="previewLoading">Carregando rota do Preview…</div>
   <div id="previewControls" aria-label="Controles do Preview">
     <label for="previewMapSelect">Mapa</label>
@@ -1954,6 +1968,8 @@ async function loadAirportsDatabase(){
     var finished=false;
     var statusSteps=['Sincronizando rota','Verificando navegação','Carregando o mundo','Preparando o voo','Rota pronta'];
 
+    // Música própria de espera/carregamento durante a transição.\n    playMusicForContext('loading', true);
+
     root.classList.add('is-hidden');
     transition.classList.add('active');
     transition.setAttribute('aria-hidden','false');
@@ -1989,15 +2005,18 @@ async function loadAirportsDatabase(){
 
 
   // ---------- Background music ----------
-  // Place these two files in the repository:
-  //   audio/Wildfire.mp3  -> opening / transition
-  //   audio/Soaring.mp3   -> map playback
-  // The browser may block audible autoplay. We attempt it on page load and
-  // resume automatically on the first user interaction if the browser blocks it.
+  // Três ambientes musicais originais, separados por etapa:
+  //   Horizonte.wav -> abertura / ambiente
+  //   EmEspera.wav  -> carregamento / espera
+  //   VooMundial.wav -> rota / voo
+  //
+  // O navegador pode bloquear autoplay com som. Tentamos iniciar imediatamente
+  // e repetimos no primeiro toque/clique/tecla caso a política do navegador impeça.
   var musicState = {
     audio: null,
     volume: 0.42,
     muted: false,
+    paused: false,
     mode: 'sequence',
     context: 'intro',
     started: false,
@@ -2006,42 +2025,50 @@ async function loadAirportsDatabase(){
 
   var musicTracks = {
     intro: [
-      {name:'Wildfire · Jessie Villa', src:'audio/Wildfire.mp3'},
-      {name:'Soaring · The Grey Room / Golden Palms', src:'audio/Soaring.mp3'}
+      {name:'Horizonte · ambiente', src:'audio/Horizonte.wav'}
+    ],
+    loading: [
+      {name:'Em Espera · carregamento', src:'audio/EmEspera.wav'}
     ],
     map: [
-      {name:'Soaring · The Grey Room / Golden Palms', src:'audio/Soaring.mp3'},
-      {name:'Wildfire · Jessie Villa', src:'audio/Wildfire.mp3'}
+      {name:'Voo Mundial · rota', src:'audio/VooMundial.wav'}
     ]
   };
 
   function chooseMusicTrack(context){
     var list = musicTracks[context] || musicTracks.intro;
-    if(musicState.mode === 'random'){
+    if(musicState.mode === 'random' && list.length > 1){
       return list[Math.floor(Math.random()*list.length)];
     }
-    // Normal mode: the requested track for each section.
-    return context === 'map' ? list[0] : list[0];
+    return list[0];
+  }
+
+  function musicContextLabel(context){
+    if(context==='loading') return 'Carregamento · aguarde';
+    if(context==='map') return 'Rota · voo mundial';
+    return 'Abertura · ambiente';
   }
 
   function updateMusicUI(){
     var audio=musicState.audio;
     var mute=document.getElementById('musicMuteBtn');
-    var icon=document.getElementById('musicMuteIcon');
+    var muteIcon=document.getElementById('musicMuteIcon');
+    var play=document.getElementById('musicPlayBtn');
+    var playIcon=document.getElementById('musicPlayIcon');
     var name=document.getElementById('musicTrackName');
     var context=document.getElementById('musicContext');
     var vol=document.getElementById('musicVolume');
     var mode=document.getElementById('musicMode');
 
     if(name) name.textContent=musicState.current || 'Música';
-    if(context) context.textContent=musicState.context==='map' ? 'Mapa · reprodução' : 'Abertura · transição';
+    if(context) context.textContent=musicContextLabel(musicState.context);
     if(vol) vol.value=String(Math.round(musicState.volume*100));
     if(mode) mode.value=musicState.mode;
-    if(icon) icon.textContent=musicState.muted || musicState.volume===0 ? '🔇' : '🔊';
+    if(muteIcon) muteIcon.textContent=musicState.muted || musicState.volume===0 ? '🔇' : '🔊';
     if(mute) mute.setAttribute('aria-label', musicState.muted ? 'Ativar música' : 'Mutar música');
-    if(audio){
-      audio.volume=musicState.muted ? 0 : musicState.volume;
-    }
+    if(playIcon) playIcon.textContent=musicState.paused ? '▶' : 'Ⅱ';
+    if(play) play.setAttribute('aria-label', musicState.paused ? 'Tocar música' : 'Pausar música');
+    if(audio) audio.volume=musicState.muted ? 0 : musicState.volume;
   }
 
   function initMusic(){
@@ -2055,10 +2082,22 @@ async function loadAirportsDatabase(){
     audio.addEventListener('ended',function(){
       if(musicState.mode==='random'){
         playMusicForContext(musicState.context,true);
-      } else {
+      }else{
         audio.currentTime=0;
-        var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+        if(!musicState.paused){
+          var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+        }
       }
+    });
+
+    audio.addEventListener('play',function(){
+      musicState.paused=false;
+      musicState.started=true;
+      updateMusicUI();
+    });
+    audio.addEventListener('pause',function(){
+      musicState.paused=true;
+      updateMusicUI();
     });
 
     var savedVolume=localStorage.getItem('rv10-music-volume');
@@ -2071,12 +2110,12 @@ async function loadAirportsDatabase(){
 
     updateMusicUI();
 
-    // Try to start as soon as the page opens.
+    // Música ambiente começa assim que a página abre.
     playMusicForContext('intro',false);
 
-    // If autoplay is blocked, the first click/touch/keypress starts it.
+    // Fallback obrigatório para políticas de autoplay dos navegadores.
     var resume=function(){
-      if(!musicState.started){
+      if(!musicState.started && !musicState.paused){
         playMusicForContext('intro',false);
       }
     };
@@ -2093,6 +2132,7 @@ async function loadAirportsDatabase(){
 
     var track=chooseMusicTrack(context);
     musicState.context=context;
+    musicState.paused=false;
 
     if(forceNew || musicState.current!==track.name || audio.src.indexOf(track.src)===-1){
       audio.src=track.src;
@@ -2100,16 +2140,20 @@ async function loadAirportsDatabase(){
       musicState.current=track.name;
     }
 
-    audio.loop=(musicState.mode!=='random');
+    // Cada etapa é um loop contínuo. No modo aleatório, a seleção só ocorre
+    // quando houver mais de uma faixa no contexto.
+    audio.loop=true;
     audio.volume=musicState.muted ? 0 : musicState.volume;
 
     var p=audio.play();
     if(p && p.then){
       p.then(function(){
         musicState.started=true;
+        musicState.paused=false;
         updateMusicUI();
       }).catch(function(){
-        // Browser autoplay policy: the first user interaction will retry.
+        musicState.paused=false;
+        updateMusicUI();
       });
     }
     updateMusicUI();
@@ -2122,13 +2166,27 @@ async function loadAirportsDatabase(){
     var mute=document.getElementById('musicMuteBtn');
     var volume=document.getElementById('musicVolume');
     var mode=document.getElementById('musicMode');
+    var play=document.getElementById('musicPlayBtn');
+
+    if(play && !play._bound){
+      play._bound=true;
+      play.addEventListener('click',function(){
+        if(audio.paused){
+          musicState.paused=false;
+          var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+        }else{
+          audio.pause();
+        }
+        updateMusicUI();
+      });
+    }
 
     if(mute && !mute._bound){
       mute._bound=true;
       mute.addEventListener('click',function(){
         musicState.muted=!musicState.muted;
         audio.volume=musicState.muted ? 0 : musicState.volume;
-        if(!musicState.muted){
+        if(!musicState.muted && audio.paused){
           var p=audio.play(); if(p&&p.catch)p.catch(function(){});
         }
         updateMusicUI();
@@ -2142,8 +2200,10 @@ async function loadAirportsDatabase(){
         if(musicState.volume>0) musicState.muted=false;
         audio.volume=musicState.muted ? 0 : musicState.volume;
         localStorage.setItem('rv10-music-volume',String(musicState.volume));
+        if(audio.paused && musicState.volume>0){
+          var p=audio.play(); if(p&&p.catch)p.catch(function(){});
+        }
         updateMusicUI();
-        var p=audio.play(); if(p&&p.catch)p.catch(function(){});
       });
     }
 
