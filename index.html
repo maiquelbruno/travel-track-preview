@@ -434,10 +434,6 @@
   .transition-destination-globe{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;filter:drop-shadow(0 0 18px rgba(102,205,224,.25));border:1px solid rgba(178,227,235,.25)}
   .transition-point-label{font-size:8px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap}
   .transition-percent{position:absolute;left:0;top:30px;transform:translateX(-50%);font-size:9px;font-weight:850;color:#f4c51b;letter-spacing:.08em;min-width:32px;text-align:center}
-  .transition-ticks{position:absolute;left:0;right:0;top:13px;display:flex;justify-content:space-between;pointer-events:none}
-  .transition-tick{width:1px;height:7px;background:rgba(255,255,255,.2)}
-  .transition-tick.major{height:10px;background:rgba(255,255,255,.38)}
-  .transition-percent-scale{position:absolute;left:0;right:0;top:30px;display:flex;justify-content:space-between;color:rgba(255,255,255,.32);font-size:8px;letter-spacing:.05em}
   .transition-status-line{margin-top:50px;text-align:center;font-size:9px;font-weight:750;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.42);animation:transitionStatusPulse 1.35s ease-in-out infinite}
   @keyframes transitionStatusPulse{0%,100%{opacity:.42}50%{opacity:1}}
   @media(max-width:760px){
@@ -506,9 +502,6 @@
     <div class="intro-wrap">
       <div class="intro-top">
         <div class="intro-brand">
-          <span class="intro-brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M3 13.2 10.4 10l6.1-5.4 2.1.8-4.3 6.1 6.1 1.8c1.2.4 1.8 1 1.8 1.7 0 .8-.9 1.2-2.2 1.1l-7-.7-3.5 3.9-2-.7 1.8-4-6.3-.8Z" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>
-          </span>
           <span>RV-10 · World Flight</span>
         </div>
         <div class="intro-controls">
@@ -570,7 +563,6 @@
         <div class="transition-progress-track">
           <div class="transition-progress-fill" id="transitionProgressFill"></div>
           <div class="transition-progress-plane" id="transitionProgressPlane" aria-hidden="true"><img alt="Aeronave" /></div>
-          <div class="transition-ticks" aria-hidden="true"><span class="transition-tick major"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick"></span><span class="transition-tick major"></span></div>
         </div>
         <div class="transition-origin">
           <span class="transition-origin-flag fi fi-br" aria-label="Brasil"></span>
@@ -581,7 +573,6 @@
           <span class="transition-point-label">Mundo · destino</span>
         </div>
         <div class="transition-percent" id="transitionPercent">0%</div>
-        <div class="transition-percent-scale" aria-hidden="true"><span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span><span>50%</span><span>60%</span><span>70%</span><span>80%</span><span>90%</span><span>100%</span></div>
         <div class="transition-status-line" id="transitionStatusLine">Sincronizando rota</div>
       </div>
     </div>
@@ -1886,7 +1877,7 @@ async function loadAirportsDatabase(){
     var pt=document.getElementById('langPt'),en=document.getElementById('langEn');
     if(pt)pt.addEventListener('click',function(){setIntroLanguage('pt');});if(en)en.addEventListener('click',function(){setIntroLanguage('en');});
     var start=document.getElementById('startJourneyBtn');
-    if(start&&!start._bound){start._bound=true;start.addEventListener('click',function(){beginFlightTransition();});}
+    if(start&&!start._bound){start._bound=true;start.addEventListener('click',function(){var m=createIntroMusic();if(m&&!m.started)m.start();beginFlightTransition();});}
   }
   function beginFlightTransition(){
     var root=document.getElementById('projectIntro');
@@ -1960,12 +1951,27 @@ async function loadAirportsDatabase(){
       var bell=ctx.createOscillator(),bg=ctx.createGain();bell.type='sine';bell.frequency.value=notes[(state.step*2)%notes.length]*2;bg.gain.setValueAtTime(0,now);bg.gain.linearRampToValueAtTime(.045,now+.08);bg.gain.exponentialRampToValueAtTime(.0001,now+1.6);bell.connect(bg).connect(comp);bell.start(now);bell.stop(now+1.7);
       state.step++;state.timer=window.setTimeout(pulse,4200);
     }
-    state.start=function(){if(ctx.state==='suspended')ctx.resume();if(!state.timer)pulse();state.started=true;document.getElementById('musicToggle').classList.add('is-playing');};
+    state.start=function(){if(ctx.state==='suspended')ctx.resume();if(!state.timer)pulse();state.started=true;var toggle=document.getElementById('musicToggle');if(toggle)toggle.classList.add('is-playing');};
     state.volume=.084;
     state.setVolume=function(v){state.volume=Math.max(0,Math.min(1,Number(v)||0));if(!state.muted)master.gain.setTargetAtTime(state.volume,ctx.currentTime,.08);};
     state.toggle=function(){state.muted=!state.muted;master.gain.setTargetAtTime(state.muted?0:state.volume,ctx.currentTime,.08);var b=document.getElementById('musicToggle');b.classList.toggle('is-muted',state.muted);b.setAttribute('aria-pressed',String(state.muted));b.setAttribute('aria-label',state.muted?'Ativar música':'Mutar música');var play=b.querySelector('.music-play');if(play)play.textContent=state.muted?'▶':'Ⅱ';};
     introMusic=state;return state;
   }
+  function initAmbientMusicAutostart(){
+    if(document.documentElement._rv10MusicBound)return;
+    document.documentElement._rv10MusicBound=true;
+    var startOnce=function(){
+      var m=createIntroMusic();
+      if(m&&!m.started)m.start();
+      document.removeEventListener('pointerdown',startOnce,true);
+      document.removeEventListener('keydown',startOnce,true);
+      document.removeEventListener('touchstart',startOnce,true);
+    };
+    document.addEventListener('pointerdown',startOnce,true);
+    document.addEventListener('keydown',startOnce,true);
+    document.addEventListener('touchstart',startOnce,true);
+  }
+
   function initMusicControl(){
     var b=document.getElementById('musicToggle');if(!b||b._bound)return;
     b._bound=true;
@@ -2035,6 +2041,8 @@ async function loadAirportsDatabase(){
     prepareProjectIntro();
   }
 
+  initAmbientMusicAutostart();
+  initMusicControl();
   init();
 })();
 
