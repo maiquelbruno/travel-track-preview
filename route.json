@@ -152,6 +152,14 @@
     "lon": -82.020715
   },
   {
+    "icao": "KX60",
+    "name": "Williston Municipal Airport",
+    "muni": "Williston",
+    "country": "US",
+    "lat": 29.35420036315918,
+    "lon": -82.472900390625
+  },
+  {
     "icao": "KDPA",
     "name": "Dupage Airport",
     "muni": "Chicago/West Chicago",
@@ -166,5 +174,13 @@
     "country": "US",
     "lat": 43.98440170288086,
     "lon": -88.55699920654297
+  },
+  {
+    "icao": "CYUL",
+    "name": "Montreal / Pierre Elliott Trudeau International Airport",
+    "muni": "Montréal",
+    "country": "CA",
+    "lat": 45.467837,
+    "lon": -73.742294
   }
 ]
