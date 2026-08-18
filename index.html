@@ -634,6 +634,22 @@
   .intro-country-flags{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
   .intro-country-flags .fi{width:22px;height:15px;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.16);background-size:cover;display:block;flex:0 0 auto}
 
+  /* ===== Landing action icons / centered labels ===== */
+  .intro-actions .landing-action{position:relative;justify-content:center;padding:8px 54px 8px 20px;text-align:center}
+  .intro-actions .landing-action .action-label{display:flex;align-items:center;justify-content:center;width:100%;text-align:center;line-height:1.05}
+  .intro-actions .landing-action .action-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#102133;color:#fff;flex:0 0 auto}
+  .intro-actions .landing-action .action-plane img{width:22px;height:22px;object-fit:contain;display:block;transform:rotate(90deg)}
+  .ui-icon{position:relative;display:block;width:16px;height:16px}
+  .ui-icon-gallery:before{content:"";position:absolute;inset:1px;border:1.7px solid #fff;border-radius:3px}
+  .ui-icon-gallery:after{content:"";position:absolute;left:4px;right:3px;bottom:4px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:skewY(-32deg) rotate(-2deg);border-radius:1px}
+  .ui-icon-coffee:before{content:"";position:absolute;left:2px;top:4px;width:10px;height:8px;border:1.7px solid #fff;border-radius:2px 2px 4px 4px}
+  .ui-icon-coffee:after{content:"";position:absolute;right:0;top:6px;width:5px;height:5px;border:1.7px solid #fff;border-left:0;border-radius:0 5px 5px 0}
+  .pix-box{display:grid;place-items:center;min-height:250px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;background:rgba(0,0,0,.16);padding:16px;box-sizing:border-box}
+  #pixQr{width:220px;height:220px;padding:0;background:#fff;border-radius:12px;display:grid;place-items:center;overflow:hidden;box-sizing:border-box}
+  #pixQr img,#pixQr canvas{width:190px!important;height:190px!important;display:block!important}
+  .pix-minimum{margin:14px 0 0!important;text-align:center;color:rgba(255,255,255,.58)!important;font-size:10px!important;line-height:1.55!important}
+  .support-note{text-align:center}
+
   .landing-modal{position:fixed;inset:0;z-index:50000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(1,7,13,.76);backdrop-filter:blur(10px)}
   .landing-modal.open{display:flex}
   .landing-modal-card{position:relative;width:min(960px,100%);max-height:min(86vh,820px);overflow:auto;border:1px solid rgba(255,255,255,.22);border-radius:24px;background:linear-gradient(145deg,rgba(8,25,38,.97),rgba(4,13,22,.96));box-shadow:0 30px 90px rgba(0,0,0,.55);padding:30px;color:#fff}
@@ -679,9 +695,18 @@
 
 
           <div class="intro-actions">
-            <button id="startJourneyBtn" class="landing-action" type="button"><span data-pt="Iniciar viagem" data-en="Start journey">Iniciar viagem</span><span class="action-arrow">→</span></button>
-            <button id="galleryBtn" class="landing-action" type="button"><span data-pt="Galeria" data-en="Gallery">Galeria</span><span class="action-arrow">↗</span></button>
-            <button id="supportBtn" class="landing-action" type="button"><span data-pt="Pague um café" data-en="Buy me a coffee">Pague um café</span><span class="action-arrow">♥</span></button>
+            <button id="startJourneyBtn" class="landing-action" type="button">
+              <span class="action-label"><span data-pt="Iniciar viagem" data-en="Start journey">Iniciar viagem</span></span>
+              <span class="action-icon action-plane" aria-hidden="true"><img src="" alt=""></span>
+            </button>
+            <button id="galleryBtn" class="landing-action" type="button">
+              <span class="action-label"><span data-pt="Galeria" data-en="Gallery">Galeria</span></span>
+              <span class="action-icon" aria-hidden="true"><span class="ui-icon ui-icon-gallery"></span></span>
+            </button>
+            <button id="supportBtn" class="landing-action" type="button">
+              <span class="action-label"><span data-pt="Pague um café" data-en="Buy me a coffee">Pague um café</span></span>
+              <span class="action-icon" aria-hidden="true"><span class="ui-icon ui-icon-coffee"></span></span>
+            </button>
           </div>
           <div class="intro-countries" aria-label="Países visitados">
             <strong id="introCountryCount">0</strong>
@@ -740,19 +765,19 @@
   <div id="supportModal" class="landing-modal" aria-hidden="true">
     <div class="landing-modal-card" role="dialog" aria-modal="true" aria-labelledby="supportModalTitle">
       <button class="landing-modal-close" type="button" data-close-modal="supportModal" aria-label="Fechar">×</button>
-      <div class="landing-modal-head"><div class="landing-modal-kicker">APOIE O PROJETO</div><div id="supportModalTitle" class="landing-modal-title" data-pt="Pague um café" data-en="Buy me a coffee">Pague um café</div><div class="landing-modal-sub" data-pt="Se você está curtindo acompanhar esta volta ao mundo virtual, pode ajudar a manter o projeto, a página e a produção das próximas etapas.">Se você está curtindo acompanhar esta volta ao mundo virtual, pode ajudar a manter o projeto, a página e a produção das próximas etapas.</div></div>
+      <div class="landing-modal-head"><div class="landing-modal-kicker">APOIE O PROJETO</div><div id="supportModalTitle" class="landing-modal-title" data-pt="Pague um café" data-en="Buy me a coffee">Pague um café</div><div class="landing-modal-sub" data-pt="Qualquer quantia é bem-vinda e ajuda a manter esta jornada virtual no ar. Se quiser aparecer como apoiador no projeto, a contribuição mínima é de R$ 5,00 pelo Pix ou US$ 2,00 pelo PayPal." data-en="Any amount is welcome and helps keep this virtual journey going. To appear as a supporter on the project, the minimum contribution is R$ 5.00 via Pix or US$ 2.00 via PayPal.">Qualquer quantia é bem-vinda e ajuda a manter esta jornada virtual no ar. Se quiser aparecer como apoiador no projeto, a contribuição mínima é de R$ 5,00 pelo Pix ou US$ 2,00 pelo PayPal.</div></div>
       <div class="support-grid">
         <div class="support-card">
-          <h3>Pix</h3>
-          <div class="pix-box"><div id="pixQr"><div class="pix-placeholder">Configure o PIX_PAYLOAD no código para gerar o QR Code.</div></div></div>
-          <p id="pixKeyText" style="margin-top:12px;text-align:center;word-break:break-word"></p>
+          <h3 data-pt="Pix" data-en="Pix">Pix</h3>
+          <div class="pix-box"><div id="pixQr"><div class="pix-placeholder">QR Code Pix</div></div></div>
+          <p class="pix-minimum" data-pt="Doe qualquer quantia. Para aparecer como apoiador: mínimo de R$ 5,00." data-en="Donate any amount. To appear as a supporter: minimum R$ 5.00.">Doe qualquer quantia. Para aparecer como apoiador: mínimo de R$ 5,00.</p>
         </div>
         <div class="support-card">
-          <h3>PayPal</h3>
-          <p>Se preferir, você também pode contribuir pelo PayPal. O botão usa o endereço configurado no código do projeto.</p>
-          <a id="paypalDonateBtn" class="support-paypal disabled" href="#" target="_blank" rel="noopener">Contribuir com PayPal</a>
-          <div class="support-note">Depois de apoiar, se quiser aparecer na página, envie <strong>seu nome, estado e país</strong>. A lista de apoiadores é atualizada manualmente pelo responsável pelo projeto.</div>
-          <h3 style="margin-top:22px">Apoiadores</h3>
+          <h3 data-pt="PayPal" data-en="PayPal">PayPal</h3>
+          <p data-pt="Você também poderá contribuir pelo PayPal. Para aparecer como apoiador, a contribuição mínima será de US$ 2,00." data-en="You can also contribute through PayPal. To appear as a supporter, the minimum contribution will be US$ 2.00.">Você também poderá contribuir pelo PayPal. Para aparecer como apoiador, a contribuição mínima será de US$ 2,00.</p>
+          <a id="paypalDonateBtn" class="support-paypal disabled" href="#" target="_blank" rel="noopener" data-pt="Contribuir com PayPal" data-en="Contribute with PayPal">Contribuir com PayPal</a>
+          <div class="support-note" data-pt="Depois da doação, envie seu nome, cidade e país para que ele possa ser incluído na área de apoiadores." data-en="After donating, send your name, city and country so it can be added to the supporters area.">Depois da doação, envie seu nome, cidade e país para que ele possa ser incluído na área de apoiadores.</div>
+          <h3 style="margin-top:22px" data-pt="Apoiadores" data-en="Supporters">Apoiadores</h3>
           <div id="supporterList" class="supporter-list"></div>
         </div>
       </div>
@@ -2350,21 +2375,23 @@ async function loadAirportsDatabase(){
     return payload+crc16ccitt(payload);
   }
   function initDonation(){
-    var paypal=document.getElementById('paypalDonateBtn'),key=document.getElementById('pixKeyText'),qr=document.getElementById('pixQr');
+    var paypal=document.getElementById('paypalDonateBtn'),qr=document.getElementById('pixQr');
     if(paypal){
       if(LANDING_CONFIG.donation.paypalUrl){paypal.href=LANDING_CONFIG.donation.paypalUrl;paypal.classList.remove('disabled');}
       else {paypal.href='#';paypal.classList.add('disabled');}
     }
-    if(key)key.textContent=LANDING_CONFIG.donation.pixKey?'Chave Pix: '+LANDING_CONFIG.donation.pixKey:'Configure sua chave Pix em donation.json.';
     if(qr){
       var payload=buildPixPayload();
       if(payload && window.QRCode){
-        qr.innerHTML='';new QRCode(qr,{text:payload,width:190,height:190,correctLevel:QRCode.CorrectLevel.M});
-      }else qr.innerHTML='<div class="pix-placeholder">Configure <strong>pixKey</strong> ou <strong>pixPayload</strong> em <strong>donation.json</strong>.</div>';
+        qr.innerHTML='';
+        new QRCode(qr,{text:payload,width:190,height:190,correctLevel:QRCode.CorrectLevel.M});
+      }else qr.innerHTML='<div class="pix-placeholder">QR Code Pix indisponível.</div>';
     }
   }
   function closeLandingModal(id){var modal=document.getElementById(id);if(modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}}
   function initLandingExtras(){
+    var planeIcon=document.querySelector('#startJourneyBtn .action-plane img');
+    if(planeIcon) planeIcon.src=PLANE_ICON_SRC;
     var gallery=document.getElementById('galleryBtn'),support=document.getElementById('supportBtn');
     if(gallery&&!gallery._bound){gallery._bound=true;gallery.addEventListener('click',function(){openGalleryModal();});}
     if(support&&!support._bound){support._bound=true;support.addEventListener('click',function(){var m=document.getElementById('supportModal');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');loadDonationConfig().then(initDonation);}});}
