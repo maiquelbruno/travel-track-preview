@@ -666,6 +666,33 @@
   .intro-supporter-item .supporter-country{color:rgba(255,255,255,.58);font-weight:700}
   .intro-supporter-item .supporter-country .fi{width:16px;height:11px}
 
+  /* ===== Final visual tuning: action labels/icons + fixed Pix image ===== */
+  .intro-actions .landing-action{
+    position:relative; justify-content:flex-start; padding:8px 58px 8px 22px; text-align:left;
+  }
+  .intro-actions .landing-action .action-label{
+    display:flex; align-items:center; justify-content:flex-start; width:auto; min-width:0;
+    flex:1 1 auto; text-align:left; line-height:1.05; white-space:nowrap; overflow:hidden;
+  }
+  .intro-actions .landing-action .action-label > span{
+    display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .intro-actions .landing-action .action-icon{
+    position:absolute; right:10px; top:50%; transform:translateY(-50%); width:34px; height:34px;
+    border-radius:50%; display:grid; place-items:center; background:rgba(16,33,51,.52);
+    color:#fff; box-shadow:none; border:1px solid rgba(255,255,255,.18); flex:0 0 auto;
+  }
+  .intro-actions .landing-action .action-plane img{width:25px;height:25px;object-fit:contain;display:block;transform:rotate(90deg)}
+  .ui-icon{width:20px;height:20px}
+  .ui-icon-gallery:before{inset:1px;border:2px solid #18b8e8;border-radius:4px;background:linear-gradient(145deg,rgba(24,184,232,.12),rgba(244,197,27,.20))}
+  .ui-icon-gallery:after{left:4px;right:3px;bottom:4px;height:8px;border-left:2.6px solid #f4c51b;border-bottom:2.6px solid #f4c51b}
+  .ui-icon-coffee:before{left:2px;top:5px;width:12px;height:9px;border:2px solid #d9893f;border-radius:2px 2px 4px 4px;background:linear-gradient(180deg,#f4c51b 0 28%,#b86b35 29% 100%)}
+  .ui-icon-coffee:after{right:0;top:7px;width:5px;height:5px;border:2px solid #d9893f;border-left:0;border-radius:0 5px 5px 0}
+  .pix-box{display:flex;align-items:center;justify-content:center;min-height:286px;padding:18px;box-sizing:border-box}
+  #pixQr{width:250px;height:250px;padding:0;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box;margin:0 auto}
+  #pixQr img.pix-image{width:250px;height:250px;display:block;object-fit:cover;margin:0}
+  @media(max-width:640px){.intro-actions .landing-action{padding-left:18px;padding-right:54px}.intro-actions .landing-action .action-icon{right:8px;width:32px;height:32px}.intro-actions .landing-action .action-plane img{width:23px;height:23px}}
+
   .support-note{margin-top:18px;padding:13px 15px;border-left:3px solid #f4c51b;background:rgba(244,197,27,.06);font-size:11px;line-height:1.65;color:rgba(255,255,255,.72)}
   @media(max-width:900px){.intro-actions .landing-action{min-width:165px}.support-grid{grid-template-columns:1fr}}
   @media(max-width:640px){.intro-actions{display:grid;grid-template-columns:1fr 1fr}.intro-actions .landing-action{min-width:0;width:100%;height:50px;padding-left:15px;font-size:10px}.intro-actions .landing-action .action-arrow{width:27px;height:27px}.landing-modal{padding:12px}.landing-modal-card{padding:22px 18px;border-radius:18px}.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -771,7 +798,7 @@
       <div class="support-grid">
         <div class="support-card">
           <h3 data-pt="Pix" data-en="Pix">Pix</h3>
-          <div class="pix-box"><div id="pixQr"><div class="pix-placeholder">QR Code Pix</div></div></div>
+          <div class="pix-box"><div id="pixQr"><img class="pix-image" src="pix.jpeg" alt="QR Code Pix para contribuição" loading="eager" decoding="sync"></div></div>
           <p class="pix-minimum" data-pt="Doe qualquer quantia. Para aparecer como apoiador: mínimo de R$ 5,00." data-en="Donate any amount. To appear as a supporter: minimum R$ 5.00.">Doe qualquer quantia. Para aparecer como apoiador: mínimo de R$ 5,00.</p>
           <p class="donation-comment-note" data-pt="Ao fazer o Pix, se o seu banco permitir, deixe no comentário ou na mensagem: seu nome, cidade e país. Essas informações ajudam a identificar você como apoiador." data-en="When making the Pix payment, if your bank allows it, leave your name, city and country in the comment or message. This helps identify you as a supporter.">Ao fazer o Pix, se o seu banco permitir, deixe no comentário ou na mensagem: seu nome, cidade e país. Essas informações ajudam a identificar você como apoiador.</p>
         </div>
@@ -2384,11 +2411,7 @@ async function loadAirportsDatabase(){
       else {paypal.href='#';paypal.classList.add('disabled');}
     }
     if(qr){
-      var payload=buildPixPayload();
-      if(payload && window.QRCode){
-        qr.innerHTML='';
-        new QRCode(qr,{text:payload,width:220,height:220,correctLevel:QRCode.CorrectLevel.M});
-      }else qr.innerHTML='<div class="pix-placeholder">QR Code Pix indisponível.</div>';
+      qr.innerHTML='<img class="pix-image" src="pix.jpeg" alt="QR Code Pix para contribuição" loading="eager" decoding="sync">';
     }
   }
   function closeLandingModal(id){var modal=document.getElementById(id);if(modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}}
