@@ -1,0 +1,35 @@
+RV-10 WORLD FLIGHT - CONFIGURACAO
+
+1. APOIADORES
+Edite supporters.txt.
+Uma pessoa por linha:
+Nome | Cidade | Pais
+
+Exemplo:
+Michael Bruno | Goiania | Brasil
+
+A pagina carrega esse arquivo automaticamente e mostra os nomes no bloco de Apoiadores da pagina inicial em formato de creditos rolando.
+
+2. PIX E PAYPAL
+Edite donation.json na raiz do projeto:
+{
+  "pixPayload": "COLE_AQUI_O_PIX_COPIA_E_COLA",
+  "pixKey": "SUA_CHAVE_PIX",
+  "paypalUrl": "https://www.paypal.com/..."
+}
+
+O QR Code e gerado a partir do Pix Copia e Cola. A chave Pix fica visivel no modal.
+
+3. GALERIA
+Coloque as screenshots na pasta gallery/ (ou Gallery/). O site consulta automaticamente o repositorio GitHub:
+maiquelbruno/travel-track-preview
+
+Nao e necessario editar o index.html para cada nova imagem.
+
+4. PUBLICACAO
+Substitua o index.html no seu projeto por este arquivo e envie tambem:
+- donation.json
+- supporters.txt
+- gallery/
+
+Depois faca commit/push no GitHub Pages.

@@ -1,0 +1,3 @@
+# Um apoiador por linha.
+# Formato: Nome | Cidade | País
+Maiquel Bruno | Londres | Reino Unido
