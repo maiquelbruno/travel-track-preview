@@ -568,6 +568,46 @@
     #musicPanel #musicVolume{width:55px}
   }
 
+
+
+  /* ===== Landing actions / gallery / support ===== */
+  .intro-actions{gap:14px;align-items:center}
+  .intro-actions .landing-action{
+    min-width:181px;height:54px;box-sizing:border-box;border-radius:999px;padding:8px 10px 8px 20px;
+    border:1px solid rgba(255,255,255,.14);cursor:pointer;display:inline-flex;align-items:center;justify-content:space-between;
+    gap:14px;font:850 12px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;
+    color:#fff;background:rgba(6,18,29,.62);backdrop-filter:blur(12px);box-shadow:0 14px 36px rgba(0,0,0,.28);
+    transition:transform .25s ease,box-shadow .25s ease,background .25s ease,border-color .25s ease,filter .25s ease;
+  }
+  .intro-actions .landing-action:hover{transform:translateY(-2px);background:rgba(15,31,45,.82);border-color:rgba(255,255,255,.34);box-shadow:0 18px 42px rgba(0,0,0,.36);filter:brightness(1.06)}
+  .intro-actions .landing-action .action-arrow{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);font-size:14px;flex:0 0 auto}
+  #startJourneyBtn.landing-action{background:#f6c41b;color:#101923;border-color:transparent}
+  #startJourneyBtn.landing-action .action-arrow{background:#102133;color:#fff}
+  #startJourneyBtn.landing-action:hover{background:#ffd12c}
+  .landing-gallery-preview{width:min(760px,100%);margin-top:18px;overflow:hidden;position:relative;mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
+  .landing-gallery-track{display:flex;gap:10px;width:max-content;animation:galleryMarquee 34s linear infinite;will-change:transform}
+  .landing-gallery-track:hover{animation-play-state:paused}
+  .landing-gallery-thumb{width:122px;height:68px;flex:0 0 122px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.20);background:rgba(255,255,255,.06);box-shadow:0 8px 22px rgba(0,0,0,.22);cursor:pointer;opacity:.82;transition:transform .25s ease,opacity .25s ease,border-color .25s ease}
+  .landing-gallery-thumb:hover{transform:translateY(-3px) scale(1.02);opacity:1;border-color:rgba(255,255,255,.5)}
+  .landing-gallery-empty{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.48);padding:10px 0}
+  @keyframes galleryMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .intro-countries{display:flex;align-items:center;gap:10px;margin-top:15px;min-height:27px;color:rgba(255,255,255,.65);font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .intro-countries strong{color:#fff;font-size:14px;letter-spacing:-.02em}
+  .intro-country-flags{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .intro-country-flags .fi{width:22px;height:15px;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.16);background-size:cover;display:block;flex:0 0 auto}
+
+  .landing-modal{position:fixed;inset:0;z-index:50000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(1,7,13,.76);backdrop-filter:blur(10px)}
+  .landing-modal.open{display:flex}
+  .landing-modal-card{position:relative;width:min(960px,100%);max-height:min(86vh,820px);overflow:auto;border:1px solid rgba(255,255,255,.22);border-radius:24px;background:linear-gradient(145deg,rgba(8,25,38,.97),rgba(4,13,22,.96));box-shadow:0 30px 90px rgba(0,0,0,.55);padding:30px;color:#fff}
+  .landing-modal-close{position:absolute;right:16px;top:14px;width:34px;height:34px;border:1px solid rgba(255,255,255,.18);border-radius:50%;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:18px;line-height:1}
+  .landing-modal-head{padding-right:46px;margin-bottom:22px}.landing-modal-kicker{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.48);margin-bottom:8px}.landing-modal-title{font-size:clamp(28px,4vw,48px);font-weight:900;letter-spacing:-.04em}.landing-modal-sub{margin-top:8px;color:rgba(255,255,255,.64);line-height:1.6;font-size:13px}
+  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}.gallery-item{position:relative;overflow:hidden;border-radius:13px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);cursor:pointer}.gallery-item img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;transition:transform .35s ease}.gallery-item:hover img{transform:scale(1.05)}.gallery-item span{position:absolute;left:8px;right:8px;bottom:8px;font-size:9px;color:#fff;text-shadow:0 2px 8px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gallery-status{padding:26px 4px;text-align:center;color:rgba(255,255,255,.55);font-size:12px}
+  .support-grid{display:grid;grid-template-columns:minmax(230px,.8fr) minmax(280px,1.2fr);gap:26px;align-items:start}.support-card{padding:20px;border:1px solid rgba(255,255,255,.13);border-radius:18px;background:rgba(255,255,255,.045)}.support-card h3{margin:0 0 10px;font-size:14px}.support-card p{margin:0;color:rgba(255,255,255,.66);font-size:12px;line-height:1.65}.pix-box{display:grid;place-items:center;min-height:250px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;background:rgba(0,0,0,.16)}#pixQr{width:190px;height:190px;padding:10px;background:#fff;border-radius:12px;display:grid;place-items:center}#pixQr img{width:190px;height:190px}.pix-placeholder{max-width:210px;text-align:center;color:#56606a;font-size:11px}.support-paypal{display:inline-flex;align-items:center;justify-content:center;margin-top:16px;width:100%;height:44px;border-radius:999px;background:#fff;color:#102133;text-decoration:none;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.support-paypal.disabled{opacity:.45;pointer-events:none}.supporter-list{display:grid;gap:8px;margin-top:14px}.supporter{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.09)}.supporter:last-child{border-bottom:0}.supporter strong{font-size:11px}.supporter span{font-size:9px;color:rgba(255,255,255,.46);text-align:right}
+  .support-note{margin-top:18px;padding:13px 15px;border-left:3px solid #f4c51b;background:rgba(244,197,27,.06);font-size:11px;line-height:1.65;color:rgba(255,255,255,.72)}
+  @media(max-width:900px){.intro-actions .landing-action{min-width:165px}.landing-gallery-preview{max-width:100%}.support-grid{grid-template-columns:1fr}}
+  @media(max-width:640px){.intro-actions{display:grid;grid-template-columns:1fr 1fr}.intro-actions .landing-action{min-width:0;width:100%;height:50px;padding-left:15px;font-size:10px}.intro-actions .landing-action .action-arrow{width:27px;height:27px}.landing-gallery-thumb{width:100px;height:58px;flex-basis:100px}.landing-modal{padding:12px}.landing-modal-card{padding:22px 18px;border-radius:18px}.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -593,7 +633,21 @@
             <div class="route-destination"><div><strong data-pt="O Mundo" data-en="The World">O Mundo</strong><small data-pt="Uma etapa de cada vez" data-en="One leg at a time">Uma etapa de cada vez</small></div><img class="route-globe" src="rv10-earth.png" alt="Terra" /></div>
           </div>
 
-          <div class="intro-actions"><button id="startJourneyBtn" type="button"><span data-pt="Iniciar viagem" data-en="Start journey">Iniciar viagem</span><span class="arrow">→</span></button></div>
+
+          <div class="intro-actions">
+            <button id="startJourneyBtn" class="landing-action" type="button"><span data-pt="Iniciar viagem" data-en="Start journey">Iniciar viagem</span><span class="action-arrow">→</span></button>
+            <button id="galleryBtn" class="landing-action" type="button"><span data-pt="Galeria" data-en="Gallery">Galeria</span><span class="action-arrow">↗</span></button>
+            <button id="supportBtn" class="landing-action" type="button"><span data-pt="Pague um café" data-en="Buy me a coffee">Pague um café</span><span class="action-arrow">♥</span></button>
+          </div>
+          <div class="landing-gallery-preview" aria-label="Prévia da galeria">
+            <div id="landingGalleryTrack" class="landing-gallery-track"><div class="landing-gallery-empty">Carregando galeria…</div></div>
+          </div>
+          <div class="intro-countries" aria-label="Países visitados">
+            <strong id="introCountryCount">0</strong>
+            <span data-pt="países visitados" data-en="countries visited">países visitados</span>
+            <div id="introCountryFlags" class="intro-country-flags"></div>
+          </div>
+
         </div>
 
         <aside class="intro-card">
@@ -622,6 +676,37 @@
       <div class="intro-footer"><span>RV-10 · WORLD FLIGHT</span><span data-pt="Quando estiver pronto, decole" data-en="When you're ready, take off">Quando estiver pronto, decole</span></div>
     </div>
   </section>
+
+
+  <div id="galleryModal" class="landing-modal" aria-hidden="true">
+    <div class="landing-modal-card" role="dialog" aria-modal="true" aria-labelledby="galleryModalTitle">
+      <button class="landing-modal-close" type="button" data-close-modal="galleryModal" aria-label="Fechar">×</button>
+      <div class="landing-modal-head"><div class="landing-modal-kicker">RV-10 · WORLD FLIGHT</div><div id="galleryModalTitle" class="landing-modal-title" data-pt="Galeria" data-en="Gallery">Galeria</div><div class="landing-modal-sub" data-pt="Screenshots e momentos da reprodução virtual da jornada. As imagens são carregadas diretamente do repositório configurado no GitHub." data-en="Screenshots and moments from the virtual recreation. Images are loaded directly from the configured GitHub repository.">Screenshots e momentos da reprodução virtual da jornada. As imagens são carregadas diretamente do repositório configurado no GitHub.</div></div>
+      <div id="galleryGrid" class="gallery-grid"><div class="gallery-status">Carregando galeria…</div></div>
+    </div>
+  </div>
+
+  <div id="supportModal" class="landing-modal" aria-hidden="true">
+    <div class="landing-modal-card" role="dialog" aria-modal="true" aria-labelledby="supportModalTitle">
+      <button class="landing-modal-close" type="button" data-close-modal="supportModal" aria-label="Fechar">×</button>
+      <div class="landing-modal-head"><div class="landing-modal-kicker">APOIE O PROJETO</div><div id="supportModalTitle" class="landing-modal-title" data-pt="Pague um café" data-en="Buy me a coffee">Pague um café</div><div class="landing-modal-sub" data-pt="Se você está curtindo acompanhar esta volta ao mundo virtual, pode ajudar a manter o projeto, a página e a produção das próximas etapas.">Se você está curtindo acompanhar esta volta ao mundo virtual, pode ajudar a manter o projeto, a página e a produção das próximas etapas.</div></div>
+      <div class="support-grid">
+        <div class="support-card">
+          <h3>Pix</h3>
+          <div class="pix-box"><div id="pixQr"><div class="pix-placeholder">Configure o PIX_PAYLOAD no código para gerar o QR Code.</div></div></div>
+          <p id="pixKeyText" style="margin-top:12px;text-align:center;word-break:break-word"></p>
+        </div>
+        <div class="support-card">
+          <h3>PayPal</h3>
+          <p>Se preferir, você também pode contribuir pelo PayPal. O botão usa o endereço configurado no código do projeto.</p>
+          <a id="paypalDonateBtn" class="support-paypal disabled" href="#" target="_blank" rel="noopener">Contribuir com PayPal</a>
+          <div class="support-note">Depois de apoiar, se quiser aparecer na página, envie <strong>seu nome, estado e país</strong>. A lista de apoiadores é atualizada manualmente pelo responsável pelo projeto.</div>
+          <h3 style="margin-top:22px">Apoiadores</h3>
+          <div id="supporterList" class="supporter-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section id="flightTransition" aria-hidden="true">
     <div class="transition-sky"></div>
@@ -743,6 +828,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const AIRPORTS = [];
 
@@ -836,6 +922,27 @@ async function loadAirportsDatabase(){
 
   // ---------- State ----------
   var route = [];              // array of {icao,name,muni,country,lat,lon}
+
+
+  // ---------- Landing extras configuration ----------
+  // Configure these values once and the landing page will use them automatically.
+  var LANDING_CONFIG = {
+    gallery: {
+      // Public GitHub repository. Put screenshots inside this folder.
+      apiUrl: 'https://api.github.com/repos/SEU_USUARIO/SEU_REPOSITORIO/contents/gallery',
+      webUrl: 'https://github.com/SEU_USUARIO/SEU_REPOSITORIO/tree/main/gallery',
+      allowedExtensions: ['jpg','jpeg','png','webp','avif','gif']
+    },
+    donation: {
+      // Paste the complete Pix Copia e Cola payload here to generate a valid payment QR.
+      pixPayload: '',
+      pixKey: '',
+      paypalUrl: ''
+    },
+    supporters: [
+      // { name: 'Nome', location: 'CE · Brasil' }
+    ]
+  };
   var settings = { speed: 5, mapStyle: 'voyager' };
   var globe = null, globePlaneEl = null, globeTrailData = [], globeStaticPaths = [], globePlaybackLabels = [];
   var globePlaneImage=null, globeViewAnimRaf=null;
@@ -1949,6 +2056,96 @@ async function loadAirportsDatabase(){
     if(pt)pt.classList.toggle('active',lang==='pt');if(en)en.classList.toggle('active',lang==='en');
     try{localStorage.setItem('rv10-intro-lang',lang);}catch(e){}
   }
+
+  function uniqueRouteCountries(){
+    var seen={}, list=[];
+    (route||[]).forEach(function(wp){
+      var cc=String(wp.country||'').trim().toLowerCase().slice(0,2);
+      if(cc && !seen[cc]){seen[cc]=true;list.push(cc);}
+    });
+    return list;
+  }
+  function renderIntroCountries(){
+    var countEl=document.getElementById('introCountryCount'),flagsEl=document.getElementById('introCountryFlags');
+    if(!countEl||!flagsEl)return;
+    var countries=uniqueRouteCountries();
+    countEl.textContent=String(countries.length);
+    flagsEl.innerHTML=countries.map(function(cc){return '<span class="fi fi-'+cc+'" title="'+cc.toUpperCase()+'" aria-label="'+cc.toUpperCase()+'"></span>';}).join('');
+  }
+  function isGalleryImage(name){
+    var ext=String(name||'').split('.').pop().toLowerCase();
+    return LANDING_CONFIG.gallery.allowedExtensions.indexOf(ext)!==-1;
+  }
+  var landingGalleryItems=[];
+  async function loadLandingGallery(){
+    var track=document.getElementById('landingGalleryTrack'),grid=document.getElementById('galleryGrid');
+    if(!track||!grid)return;
+    try{
+      var response=await fetch(LANDING_CONFIG.gallery.apiUrl,{headers:{'Accept':'application/vnd.github+json'}});
+      if(!response.ok)throw new Error('GitHub HTTP '+response.status);
+      var items=await response.json();
+      landingGalleryItems=(Array.isArray(items)?items:[]).filter(function(item){return item && item.type==='file' && isGalleryImage(item.name) && item.download_url;});
+      if(!landingGalleryItems.length)throw new Error('Nenhuma imagem encontrada');
+      var thumbs=landingGalleryItems.map(function(item){return '<img class="landing-gallery-thumb" src="'+item.download_url+'" alt="'+String(item.name).replace(/"/g,'&quot;')+'" loading="lazy" data-gallery-index="'+landingGalleryItems.indexOf(item)+'">';}).join('');
+      track.innerHTML=thumbs+thumbs;
+      track.querySelectorAll('.landing-gallery-thumb').forEach(function(img){img.addEventListener('click',function(){openGalleryModal(Number(img.getAttribute('data-gallery-index')));});});
+      grid.innerHTML=landingGalleryItems.map(function(item,i){return '<button class="gallery-item" type="button" data-gallery-index="'+i+'"><img src="'+item.download_url+'" alt="'+String(item.name).replace(/"/g,'&quot;')+'" loading="lazy"><span>'+item.name.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></button>';}).join('');
+      grid.querySelectorAll('.gallery-item').forEach(function(btn){btn.addEventListener('click',function(){openGalleryLightbox(Number(btn.getAttribute('data-gallery-index')));});});
+    }catch(err){
+      console.warn('Gallery load failed:',err);
+      track.innerHTML='<div class="landing-gallery-empty">Configure o repositório do GitHub em LANDING_CONFIG.gallery</div>';
+      grid.innerHTML='<div class="gallery-status">A galeria ainda não está configurada. Defina o usuário, repositório e pasta em <strong>LANDING_CONFIG.gallery</strong>.</div>';
+    }
+  }
+  function openGalleryModal(index){
+    var modal=document.getElementById('galleryModal');if(!modal)return;
+    modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+    if(typeof index==='number')openGalleryLightbox(index);
+  }
+  function openGalleryLightbox(index){
+    var item=landingGalleryItems[index];if(!item)return;
+    var modal=document.getElementById('galleryModal');if(!modal)return;
+    modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+    var grid=document.getElementById('galleryGrid');
+    if(grid){
+      grid.innerHTML='<div style="grid-column:1/-1;display:grid;gap:12px;justify-items:center"><img src="'+item.download_url+'" alt="'+String(item.name).replace(/"/g,'&quot;')+'" style="display:block;max-width:100%;max-height:62vh;object-fit:contain;border-radius:14px"><div style="font-size:10px;color:rgba(255,255,255,.55)">'+item.name.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div><button id="backToGalleryGrid" type="button" class="landing-action" style="min-width:180px;justify-content:center;height:42px;padding:8px 18px">Voltar à galeria</button></div>';
+      document.getElementById('backToGalleryGrid').addEventListener('click',function(){
+        grid.innerHTML=landingGalleryItems.map(function(it,i){return '<button class="gallery-item" type="button" data-gallery-index="'+i+'"><img src="'+it.download_url+'" alt="'+String(it.name).replace(/"/g,'&quot;')+'" loading="lazy"><span>'+it.name.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></button>';}).join('');
+        grid.querySelectorAll('.gallery-item').forEach(function(btn){btn.addEventListener('click',function(){openGalleryLightbox(Number(btn.getAttribute('data-gallery-index')));});});
+      });
+    }
+  }
+  function renderSupporters(){
+    var list=document.getElementById('supporterList');if(!list)return;
+    var supporters=Array.isArray(LANDING_CONFIG.supporters)?LANDING_CONFIG.supporters:[];
+    list.innerHTML=supporters.length?supporters.map(function(s){return '<div class="supporter"><strong>'+String(s.name||'Apoiador').replace(/</g,'&lt;')+'</strong><span>'+String(s.location||'').replace(/</g,'&lt;')+'</span></div>';}).join(''):'<div style="font-size:10px;color:rgba(255,255,255,.42)">Em breve, os nomes dos apoiadores aparecerão aqui.</div>';
+  }
+  function initDonation(){
+    var paypal=document.getElementById('paypalDonateBtn'),key=document.getElementById('pixKeyText'),qr=document.getElementById('pixQr');
+    if(paypal){
+      if(LANDING_CONFIG.donation.paypalUrl){paypal.href=LANDING_CONFIG.donation.paypalUrl;paypal.classList.remove('disabled');}
+      else paypal.classList.add('disabled');
+    }
+    if(key)key.textContent=LANDING_CONFIG.donation.pixKey?'Chave Pix: '+LANDING_CONFIG.donation.pixKey:'Configure sua chave Pix em LANDING_CONFIG.donation.';
+    if(qr){
+      if(LANDING_CONFIG.donation.pixPayload && window.QRCode){
+        qr.innerHTML='';new QRCode(qr,{text:LANDING_CONFIG.donation.pixPayload,width:190,height:190,correctLevel:QRCode.CorrectLevel.M});
+      }else qr.innerHTML='<div class="pix-placeholder">Configure o <strong>pixPayload</strong> com o Pix Copia e Cola para gerar o QR Code.</div>';
+    }
+    renderSupporters();
+  }
+  function closeLandingModal(id){var modal=document.getElementById(id);if(modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}}
+  function initLandingExtras(){
+    var gallery=document.getElementById('galleryBtn'),support=document.getElementById('supportBtn');
+    if(gallery&&!gallery._bound){gallery._bound=true;gallery.addEventListener('click',function(){openGalleryModal();});}
+    if(support&&!support._bound){support._bound=true;support.addEventListener('click',function(){var m=document.getElementById('supportModal');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}});}
+    document.querySelectorAll('[data-close-modal]').forEach(function(btn){if(btn._bound)return;btn._bound=true;btn.addEventListener('click',function(){closeLandingModal(btn.getAttribute('data-close-modal'));});});
+    document.querySelectorAll('.landing-modal').forEach(function(modal){if(modal._bound)return;modal._bound=true;modal.addEventListener('click',function(e){if(e.target===modal)closeLandingModal(modal.id);});});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeLandingModal('galleryModal');closeLandingModal('supportModal');}});
+    loadLandingGallery();
+    initDonation();
+  }
+
   function prepareProjectIntro(){
     var root=document.getElementById('projectIntro');if(!root)return;
     var stops=document.getElementById('introStops'),distance=document.getElementById('introDistance');
@@ -1961,6 +2158,8 @@ async function loadAirportsDatabase(){
     if(progressBar)progressBar.style.width=percent+'%';
     if(stops)stops.textContent=String(completedLandings);
     if(distance){var km=introDistanceKm();distance.textContent=km?Math.round(km).toLocaleString('pt-BR')+' km':'—';}
+    renderIntroCountries();
+    initLandingExtras();
     root.classList.remove('loading');root.classList.add('ready');
     var saved='pt';try{saved=localStorage.getItem('rv10-intro-lang')||'pt';}catch(e){}
     setIntroLanguage(saved==='en'?'en':'pt');
