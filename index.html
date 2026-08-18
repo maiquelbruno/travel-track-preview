@@ -2173,13 +2173,25 @@ async function loadAirportsDatabase(){
   function getIntroLang(){try{return localStorage.getItem('rv10-intro-lang')||'pt';}catch(e){return 'pt';}}
   function refreshLandingDynamicLanguage(lang){
     document.querySelectorAll('[data-aria-pt][data-aria-en]').forEach(function(el){el.setAttribute('aria-label',lang==='en'?el.getAttribute('data-aria-en'):el.getAttribute('data-aria-pt'));});
+    document.documentElement.lang=lang==='en'?'en':'pt-BR';
   }
   function setIntroLanguage(lang){
-    var root=document.getElementById('projectIntro');if(!root)return;
-    root.querySelectorAll('[data-pt][data-en]').forEach(function(el){el.innerHTML=lang==='en'?el.getAttribute('data-en'):el.getAttribute('data-pt');});
+    lang=lang==='en'?'en':'pt';
+    // The language selector controls the entire landing experience, including
+    // the Gallery and Buy Me a Coffee modals. Earlier versions only changed
+    // elements inside #projectIntro, leaving the cards in Portuguese.
+    document.querySelectorAll('[data-pt][data-en]').forEach(function(el){
+      el.innerHTML=lang==='en'?el.getAttribute('data-en'):el.getAttribute('data-pt');
+    });
     var pt=document.getElementById('langPt'),en=document.getElementById('langEn');
-    if(pt)pt.classList.toggle('active',lang==='pt');if(en)en.classList.toggle('active',lang==='en');
-    try{localStorage.setItem('rv10-intro-lang',lang);}catch(e){} refreshLandingDynamicLanguage(lang);
+    if(pt)pt.classList.toggle('active',lang==='pt');
+    if(en)en.classList.toggle('active',lang==='en');
+    try{localStorage.setItem('rv10-intro-lang',lang);}catch(e){}
+    refreshLandingDynamicLanguage(lang);
+    // Dynamic supporter locations and gallery status/buttons also follow the
+    // selected language.
+    renderSupporters();
+    if(typeof refreshGalleryDynamicText==='function') refreshGalleryDynamicText();
   }
 
   function uniqueRouteCountries(){
@@ -2263,6 +2275,11 @@ async function loadAirportsDatabase(){
       grid.innerHTML='<div class="gallery-status" data-pt="Não foi possível carregar a galeria. Confira a pasta gallery no GitHub ou o arquivo gallery.json." data-en="Could not load the gallery. Check the gallery folder on GitHub or the gallery.json file.">'+(getIntroLang()==='en'?'Could not load the gallery. Check the gallery folder on GitHub or the gallery.json file.':'Não foi possível carregar a galeria. Confira a pasta gallery no GitHub ou o arquivo gallery.json.')+'</div>';
     }
   }
+  function refreshGalleryDynamicText(){
+    var lang=getIntroLang();
+    var status=document.querySelector('#galleryGrid .gallery-status[data-pt][data-en]');
+    if(status) status.textContent=lang==='en'?status.getAttribute('data-en'):status.getAttribute('data-pt');
+  }
   function openGalleryModal(index){
     var modal=document.getElementById('galleryModal');if(!modal)return;
     modal.classList.add('open');modal.setAttribute('aria-hidden','false');
@@ -2274,7 +2291,7 @@ async function loadAirportsDatabase(){
     modal.classList.add('open');modal.setAttribute('aria-hidden','false');
     var grid=document.getElementById('galleryGrid');
     if(grid){
-      grid.innerHTML='<div style="grid-column:1/-1;display:grid;gap:12px;justify-items:center"><img src="'+item.download_url+'" alt="'+String(item.name).replace(/"/g,'&quot;')+'" style="display:block;max-width:100%;max-height:62vh;object-fit:contain;border-radius:14px"><div style="font-size:10px;color:rgba(255,255,255,.55)">'+item.name.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div><button id="backToGalleryGrid" type="button" class="landing-action" style="min-width:180px;justify-content:center;height:42px;padding:8px 18px">Voltar à galeria</button></div>';
+      grid.innerHTML='<div style="grid-column:1/-1;display:grid;gap:12px;justify-items:center"><img src="'+item.download_url+'" alt="'+String(item.name).replace(/"/g,'&quot;')+'" style="display:block;max-width:100%;max-height:62vh;object-fit:contain;border-radius:14px"><div style="font-size:10px;color:rgba(255,255,255,.55)">'+item.name.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div><button id="backToGalleryGrid" type="button" class="landing-action" style="min-width:180px;justify-content:center;height:42px;padding:8px 18px">'+(getIntroLang()==='en'?'Back to gallery':'Voltar à galeria')+'</button></div>';
       document.getElementById('backToGalleryGrid').addEventListener('click',function(){
         grid.innerHTML=landingGalleryItems.map(function(it,i){return '<button class="gallery-item" type="button" data-gallery-index="'+i+'"><img src="'+it.download_url+'" alt="'+String(it.name).replace(/"/g,'&quot;')+'" loading="lazy"><span>'+it.name.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></button>';}).join('');
         grid.querySelectorAll('.gallery-item').forEach(function(btn){btn.addEventListener('click',function(){openGalleryLightbox(Number(btn.getAttribute('data-gallery-index')));});});
@@ -2334,8 +2351,34 @@ async function loadAirportsDatabase(){
     var code=SUPPORTER_COUNTRY_ALIASES[compact];
     return code ? {code:code,name:SUPPORTER_COUNTRY_CODES[code]||raw} : {code:'',name:raw};
   }
+  // City names do not have a browser-native equivalent of Intl.DisplayNames.
+  // The supporter file stays simple (Name | City | Country). For common
+  // international cities we translate the city according to the selected UI
+  // language; unknown city names are kept exactly as supplied by the author.
+  var SUPPORTER_CITY_TRANSLATIONS = [
+    ['Londres','London'],['Lisboa','Lisbon'],['Roma','Rome'],['Milão','Milan'],['Florença','Florence'],['Veneza','Venice'],
+    ['Munique','Munich'],['Colônia','Cologne'],['Viena','Vienna'],['Praga','Prague'],['Moscou','Moscow'],['Atenas','Athens'],
+    ['Copenhague','Copenhagen'],['Estocolmo','Stockholm'],['Varsóvia','Warsaw'],['Zurique','Zurich'],['Genebra','Geneva'],
+    ['Bruxelas','Brussels'],['Amsterdã','Amsterdam'],['Edimburgo','Edinburgh'],['Nova York','New York'],
+    ['São Francisco','San Francisco'],['Cidade do México','Mexico City'],['Cidade do Cabo','Cape Town'],
+    ['Joanesburgo','Johannesburg'],['Pequim','Beijing'],['Xangai','Shanghai'],['Tóquio','Tokyo'],['Seul','Seoul'],
+    ['Bombaim','Mumbai'],['Nova Délhi','New Delhi'],['Singapura','Singapore'],['Montevideu','Montevideo'],
+    ['Bogotá','Bogota'],['Brasília','Brasilia'],['Goiânia','Goiania'],['São Paulo','Sao Paulo']
+  ];
+  function translateSupporterCity(city,lang){
+    var raw=String(city||'').trim();
+    if(!raw)return '';
+    var key=normalizeCountryName(raw);
+    for(var i=0;i<SUPPORTER_CITY_TRANSLATIONS.length;i++){
+      var pt=SUPPORTER_CITY_TRANSLATIONS[i][0],en=SUPPORTER_CITY_TRANSLATIONS[i][1];
+      if(key===normalizeCountryName(pt)) return lang==='en'?en:pt;
+      if(key===normalizeCountryName(en)) return lang==='en'?en:pt;
+    }
+    return raw;
+  }
   function supporterLocationMarkup(s){
-    var city=escapeLandingText(s.city||'');
+    var lang=getIntroLang();
+    var city=escapeLandingText(translateSupporterCity(s.city||'',lang));
     var resolved=resolveSupporterCountry(s.country||s.location||'');
     var code=resolved.code;
     var countryHtml=code ? '<span class="supporter-country" title="'+escapeLandingText(resolved.name)+'"><span class="fi fi-'+code.toLowerCase()+'" aria-hidden="true"></span><b>'+code+'</b></span>' : '<span class="supporter-country"><b>'+escapeLandingText(resolved.name||'')+'</b></span>';
@@ -2351,7 +2394,7 @@ async function loadAirportsDatabase(){
       return '<div class="supporter"><strong>'+name+'</strong>'+supporterLocationMarkup(s)+'</div>';
     });
     if(list){
-      list.innerHTML=items.length?items.join(''):'<div style="font-size:10px;color:rgba(255,255,255,.42)">Em breve, os nomes dos apoiadores aparecerão aqui.</div>';
+      list.innerHTML=items.length?items.join(''):(getIntroLang()==='en' ? '<div style="font-size:10px;color:rgba(255,255,255,.42)">Supporter names will appear here soon.</div>' : '<div style="font-size:10px;color:rgba(255,255,255,.42)">Em breve, os nomes dos apoiadores aparecerão aqui.</div>');
     }
     if(introTrack){
       if(!supporters.length){

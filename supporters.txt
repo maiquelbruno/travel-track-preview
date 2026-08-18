@@ -1,3 +1,4 @@
 # Um apoiador por linha.
 # Formato: Nome | Cidade | País
+# Você pode escrever o país em português ou inglês; o site identifica o país, mostra a bandeira e o código ISO.
 Maiquel Bruno | Farnborough | Reino Unido
