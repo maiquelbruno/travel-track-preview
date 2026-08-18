@@ -767,17 +767,15 @@
   #pixQr img.pix-image{display:block!important;width:250px!important;height:250px!important;max-width:none!important;max-height:none!important;object-fit:contain!important;margin:0!important}
 
 
-/* =====================================================================
-   PATCH DESKTOP-EM-TODAS-AS-TELAS
-   Mantém o layout de desktop e reduz tudo proporcionalmente.
-   Não altera JavaScript nem a lógica do projeto.
-   ===================================================================== */
+/* ===== PATCH MOBILE = DESKTOP ESCALADO (ajuste fino) ===== */
 :root{
   --desktop-base:1480;
   --desktop-scale:min(1, calc(100vw / (var(--desktop-base) * 1px)));
 }
 
-@media (max-width:900px){
+/* Aplica no celular mesmo quando o Chrome estiver em "Site para computador". */
+@media (pointer:coarse) and (max-width:1200px){
+
   #projectIntro{
     overflow:auto !important;
     -webkit-overflow-scrolling:touch;
@@ -786,37 +784,17 @@
   .intro-wrap{
     width:calc(var(--desktop-base) * 1px) !important;
     max-width:none !important;
-    height:calc(100dvh / var(--desktop-scale)) !important;
     transform:scale(var(--desktop-scale));
     transform-origin:top left;
     margin:0 !important;
     padding:24px 52px 30px !important;
   }
 
-  /* Mantém a composição de desktop */
   .intro-main{
     grid-template-columns:minmax(620px,1.1fr) minmax(380px,.9fr) !important;
-    align-content:space-between !important;
     row-gap:32px !important;
-    min-height:calc(100% - 70px) !important;
-    padding-bottom:120px !important;
   }
 
-  .intro-left{
-    max-width:840px !important;
-    padding-top:1.5vh !important;
-    margin-left:-10px !important;
-  }
-
-  .intro-card{
-    justify-self:end !important;
-    align-self:center !important;
-    width:460px !important;
-    transform:translateX(46px) !important;
-    margin-top:0 !important;
-  }
-
-  /* Os três botões permanecem na mesma linha */
   .intro-actions{
     display:flex !important;
     flex-wrap:nowrap !important;
@@ -827,47 +805,48 @@
     flex:0 0 auto !important;
   }
 
-  /* Mantém a faixa da rota igual ao desktop */
-  .intro-route-strip{
-    margin-top:64px !important;
-    gap:18px !important;
-    max-width:760px !important;
+  .intro-card{
+    width:460px !important;
+    justify-self:end !important;
+    transform:translateX(46px) !important;
   }
 
-  /* Título igual ao desktop, apenas escalado pelo conjunto */
   .intro-title{
     white-space:nowrap !important;
-    font-size:clamp(40px,5.4vw,86px) !important;
   }
 
-  /* Cartões de progresso podem quebrar de linha se faltar altura */
+  /* CORREÇÃO DA BARRA DE PROGRESSO:
+     volta a fazer parte do fluxo da página, sem flutuar. */
   .intro-stats{
-    position:absolute !important;
-    left:52px !important;
-    right:52px !important;
-    bottom:82px !important;
-    width:auto !important;
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    margin-top:42px !important;
     display:flex !important;
     flex-wrap:wrap !important;
+    gap:0 !important;
+    width:min(980px,100%) !important;
   }
 
   .intro-stat{
-    flex:1 1 240px !important;
+    flex:1 1 260px !important;
   }
 
   .intro-footer{
-    position:absolute !important;
-    left:52px !important;
-    right:52px !important;
-    bottom:28px !important;
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    margin-top:18px !important;
   }
 
-  /* Mantém a barra de música utilizável */
   #musicPanel{
     transform:scale(.9);
     transform-origin:bottom right;
   }
 }
+/* ===== fim do patch ===== */
 
 </style>
 </head>
