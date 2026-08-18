@@ -619,13 +619,13 @@
   .intro-actions{gap:14px;align-items:center}
   .intro-actions .landing-action{
     min-width:181px;height:54px;box-sizing:border-box;border-radius:999px;padding:8px 10px 8px 20px;
-    border:1px solid rgba(255,255,255,.14);cursor:pointer;display:inline-flex;align-items:center;justify-content:space-between;
+    border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:space-between;
     gap:14px;font:850 12px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;
-    color:#fff;background:rgba(6,18,29,.62);backdrop-filter:blur(12px);box-shadow:0 14px 36px rgba(0,0,0,.28);
+    color:#101923;background:#f6c41b;backdrop-filter:blur(12px);box-shadow:0 14px 36px rgba(0,0,0,.28);
     transition:transform .25s ease,box-shadow .25s ease,background .25s ease,border-color .25s ease,filter .25s ease;
   }
-  .intro-actions .landing-action:hover{transform:translateY(-2px);background:rgba(15,31,45,.82);border-color:rgba(255,255,255,.34);box-shadow:0 18px 42px rgba(0,0,0,.36);filter:brightness(1.06)}
-  .intro-actions .landing-action .action-arrow{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);font-size:14px;flex:0 0 auto}
+  .intro-actions .landing-action:hover{transform:translateY(-2px);background:#ffd12c;border-color:transparent;box-shadow:0 18px 42px rgba(0,0,0,.36);filter:brightness(1.04)}
+  .intro-actions .landing-action .action-arrow{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#102133;color:#fff;font-size:14px;flex:0 0 auto}
   #startJourneyBtn.landing-action{background:#f6c41b;color:#101923;border-color:transparent}
   #startJourneyBtn.landing-action .action-arrow{background:#102133;color:#fff}
   #startJourneyBtn.landing-action:hover{background:#ffd12c}
@@ -988,7 +988,7 @@ async function loadAirportsDatabase(){
     // Os dados de pagamento ficam no arquivo donation.json, na raiz do projeto.
     // Assim você não precisa editar este HTML para trocar Pix/PayPal.
     donation: {
-      configUrl: 'donation.json',
+      configUrl: './donation.json',
       pixPayload: '',
       pixKey: '',
       paypalUrl: ''
@@ -996,7 +996,7 @@ async function loadAirportsDatabase(){
     // Os apoiadores ficam no arquivo supporters.txt, na raiz do projeto.
     // Formato: Nome | Cidade | País
     supporters: [],
-    supportersUrl: 'supporters.txt'
+    supportersUrl: './supporters.txt'
   };
   var settings = { speed: 5, mapStyle: 'voyager' };
   var globe = null, globePlaneEl = null, globeTrailData = [], globeStaticPaths = [], globePlaybackLabels = [];
@@ -2132,40 +2132,63 @@ async function loadAirportsDatabase(){
     return LANDING_CONFIG.gallery.allowedExtensions.indexOf(ext)!==-1;
   }
   var landingGalleryItems=[];
-  async function fetchGalleryFromGithub(folder,branch){
-    var url='https://api.github.com/repos/'+LANDING_CONFIG.gallery.repo+'/contents/'+encodeURIComponent(folder).replace(/%2F/g,'/')+'?ref='+encodeURIComponent(branch);
+  async function fetchGithubTree(branch){
+    var url='https://api.github.com/repos/'+LANDING_CONFIG.gallery.repo+'/git/trees/'+encodeURIComponent(branch)+'?recursive=1';
     var response=await fetch(url,{headers:{'Accept':'application/vnd.github+json'},cache:'no-store'});
-    if(!response.ok)throw new Error('GitHub HTTP '+response.status+' for '+folder+' @ '+branch);
-    return response.json();
+    if(!response.ok)throw new Error('GitHub tree HTTP '+response.status+' @ '+branch);
+    var data=await response.json();
+    if(!data || !Array.isArray(data.tree))throw new Error('Resposta inválida do GitHub');
+    return data.tree;
+  }
+  async function fetchGalleryManifest(){
+    var response=await fetch('gallery.json?v='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('gallery.json HTTP '+response.status);
+    var data=await response.json();
+    if(!Array.isArray(data))throw new Error('gallery.json deve ser uma lista');
+    return data;
   }
   async function loadLandingGallery(){
     var grid=document.getElementById('galleryGrid');
     if(!grid)return;
     try{
-      var items=null,lastError=null;
-      var folders=LANDING_CONFIG.gallery.folders||['gallery'];
+      var tree=null,lastError=null,treeBranch='';
       var branches=[LANDING_CONFIG.gallery.branch||'main','master'];
-      var seen={};
-      for(var b=0;b<branches.length && !items;b++){
-        for(var f=0;f<folders.length && !items;f++){
-          try{items=await fetchGalleryFromGithub(folders[f],branches[b]);}
-          catch(err){lastError=err;}
-        }
+      for(var b=0;b<branches.length && !tree;b++){
+        try{tree=await fetchGithubTree(branches[b]);treeBranch=branches[b];}catch(err){lastError=err;}
       }
-      if(!Array.isArray(items))throw lastError||new Error('Não foi possível acessar a pasta Gallery');
-      landingGalleryItems=items.filter(function(item){
-        return item && item.type==='file' && isGalleryImage(item.name) && item.download_url;
-      });
-      if(!landingGalleryItems.length)throw new Error('Nenhuma imagem encontrada na pasta Gallery');
+      if(tree){
+        var prefixes=['gallery/','Gallery/'];
+        landingGalleryItems=tree.filter(function(item){
+          if(!item || item.type!=='blob' || !item.path)return false;
+          var path=item.path;
+          var inGallery=prefixes.some(function(prefix){return path.indexOf(prefix)===0;});
+          return inGallery && isGalleryImage(path.split('/').pop());
+        }).map(function(item){
+          var rawPath=item.path.split('/').map(encodeURIComponent).join('/');
+          return {name:item.path.split('/').pop(),path:item.path,download_url:'https://raw.githubusercontent.com/'+LANDING_CONFIG.gallery.repo+'/'+treeBranch+'/'+rawPath};
+        });
+      }
+      if(!landingGalleryItems.length){
+        try{
+          var manifest=await fetchGalleryManifest();
+          landingGalleryItems=manifest.map(function(item){
+            var name=typeof item==='string'?item:item.name;
+            var path=typeof item==='string'?item:(item.path||item.url||'');
+            if(!path)return null;
+            if(path.indexOf('http')===0)return {name:name||path.split('/').pop(),path:path,download_url:path};
+            path=path.replace(/^\/+/, '').replace(/^gallery\//i,'gallery/');
+            return {name:name||path.split('/').pop(),path:path,download_url:'./'+path};
+          }).filter(function(item){return item&&isGalleryImage(item.name);});
+        }catch(err2){lastError=err2;}
+      }
+      if(!landingGalleryItems.length)throw lastError||new Error('Nenhuma imagem encontrada');
       grid.innerHTML=landingGalleryItems.map(function(item,i){
         return '<button class="gallery-item" type="button" data-gallery-index="'+i+'"><img src="'+item.download_url+'" alt="'+escapeLandingText(item.name)+'" loading="lazy"><span>'+escapeLandingText(item.name)+'</span></button>';
       }).join('');
-      grid.querySelectorAll('.gallery-item').forEach(function(btn){
-        btn.addEventListener('click',function(){openGalleryLightbox(Number(btn.getAttribute('data-gallery-index')));});
-      });
+      grid.querySelectorAll('.gallery-item').forEach(function(btn){btn.addEventListener('click',function(){openGalleryLightbox(Number(btn.getAttribute('data-gallery-index')));});});
     }catch(err){
       console.warn('Gallery load failed:',err);
-      grid.innerHTML='<div class="gallery-status">Verifique se as imagens estão em <strong>gallery</strong> ou <strong>Gallery</strong> no repositório <strong>maiquelbruno/travel-track-preview</strong>.</div>';
+      grid.innerHTML='<div class="gallery-status">Não foi possível carregar a galeria. Confira a pasta <strong>gallery</strong> no GitHub ou use o arquivo <strong>gallery.json</strong> na raiz do projeto.</div>';
     }
   }
   function openGalleryModal(index){
@@ -2301,6 +2324,31 @@ async function loadAirportsDatabase(){
       console.warn('Donation config load failed:',err);
     }
   }
+  function pixField(id,value){
+    var bytes=new TextEncoder().encode(String(value||''));
+    return id+String(bytes.length).padStart(2,'0')+String(value||'');
+  }
+  function crc16ccitt(text){
+    var crc=0xFFFF;
+    for(var i=0;i<text.length;i++){
+      crc ^= text.charCodeAt(i)<<8;
+      for(var j=0;j<8;j++) crc=(crc&0x8000)?((crc<<1)^0x1021)&0xFFFF:(crc<<1)&0xFFFF;
+    }
+    return crc.toString(16).toUpperCase().padStart(4,'0');
+  }
+  function buildPixPayload(){
+    var d=LANDING_CONFIG.donation||{};
+    if(d.pixPayload)return d.pixPayload;
+    if(!d.pixKey)return '';
+    var name=String(d.pixName||'RV10 WORLD FLIGHT').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,' ').trim().slice(0,25);
+    var city=String(d.pixCity||'BRASIL').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,' ').trim().slice(0,15);
+    var key=String(d.pixKey).trim();
+    var merchantAccount=pixField('00','BR.GOV.BCB.PIX')+pixField('01',key);
+    var payload='000201'+pixField('26',merchantAccount)+'52040000'+'5303986';
+    if(d.pixAmount && Number(d.pixAmount)>0)payload+=pixField('54',Number(d.pixAmount).toFixed(2));
+    payload+=pixField('58','BR')+pixField('59',name)+pixField('60',city)+pixField('62',pixField('05','***'))+'6304';
+    return payload+crc16ccitt(payload);
+  }
   function initDonation(){
     var paypal=document.getElementById('paypalDonateBtn'),key=document.getElementById('pixKeyText'),qr=document.getElementById('pixQr');
     if(paypal){
@@ -2309,16 +2357,17 @@ async function loadAirportsDatabase(){
     }
     if(key)key.textContent=LANDING_CONFIG.donation.pixKey?'Chave Pix: '+LANDING_CONFIG.donation.pixKey:'Configure sua chave Pix em donation.json.';
     if(qr){
-      if(LANDING_CONFIG.donation.pixPayload && window.QRCode){
-        qr.innerHTML='';new QRCode(qr,{text:LANDING_CONFIG.donation.pixPayload,width:190,height:190,correctLevel:QRCode.CorrectLevel.M});
-      }else qr.innerHTML='<div class="pix-placeholder">Preencha o <strong>pixPayload</strong> em <strong>donation.json</strong> para gerar o QR Code.</div>';
+      var payload=buildPixPayload();
+      if(payload && window.QRCode){
+        qr.innerHTML='';new QRCode(qr,{text:payload,width:190,height:190,correctLevel:QRCode.CorrectLevel.M});
+      }else qr.innerHTML='<div class="pix-placeholder">Configure <strong>pixKey</strong> ou <strong>pixPayload</strong> em <strong>donation.json</strong>.</div>';
     }
   }
   function closeLandingModal(id){var modal=document.getElementById(id);if(modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}}
   function initLandingExtras(){
     var gallery=document.getElementById('galleryBtn'),support=document.getElementById('supportBtn');
     if(gallery&&!gallery._bound){gallery._bound=true;gallery.addEventListener('click',function(){openGalleryModal();});}
-    if(support&&!support._bound){support._bound=true;support.addEventListener('click',function(){var m=document.getElementById('supportModal');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}});}
+    if(support&&!support._bound){support._bound=true;support.addEventListener('click',function(){var m=document.getElementById('supportModal');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');loadDonationConfig().then(initDonation);}});}
     document.querySelectorAll('[data-close-modal]').forEach(function(btn){if(btn._bound)return;btn._bound=true;btn.addEventListener('click',function(){closeLandingModal(btn.getAttribute('data-close-modal'));});});
     document.querySelectorAll('.landing-modal').forEach(function(modal){if(modal._bound)return;modal._bound=true;modal.addEventListener('click',function(e){if(e.target===modal)closeLandingModal(modal.id);});});
     document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeLandingModal('galleryModal');closeLandingModal('supportModal');}});
@@ -2346,7 +2395,7 @@ async function loadAirportsDatabase(){
     var saved='pt';try{saved=localStorage.getItem('rv10-intro-lang')||'pt';}catch(e){}
     setIntroLanguage(saved==='en'?'en':'pt');
     var pt=document.getElementById('langPt'),en=document.getElementById('langEn');
-    if(pt)pt.addEventListener('click',function(){setIntroLanguage('pt');});if(en)en.addEventListener('click',function(){setIntroLanguage('en');});
+    if(pt)pt.addEventListener('click',function(){setIntroLanguage('pt');renderSupporters();});if(en)en.addEventListener('click',function(){setIntroLanguage('en');renderSupporters();});
     var start=document.getElementById('startJourneyBtn');
     if(start&&!start._bound){start._bound=true;start.addEventListener('click',function(){beginFlightTransition();});}
   }
