@@ -296,27 +296,6 @@
   .intro-top{
     height:54px;display:flex;align-items:center;justify-content:space-between;gap:20px;
   }
-  /* ===== Maiquel pelo Mundo logo ===== */
-  .landing-logo{
-    position:absolute;
-    left:clamp(400px,33vw,550px);
-    top:clamp(68px,7vw,116px);
-    z-index:20;
-    width:clamp(92px,6.8vw,112px);
-    height:auto;
-    display:block;
-    object-fit:contain;
-    mix-blend-mode:normal;
-    filter:drop-shadow(0 5px 14px rgba(0,0,0,.32));
-    pointer-events:none;
-    user-select:none;
-  }
-  @media(max-width:1100px){
-    .landing-logo{left:clamp(330px,34vw,455px);top:clamp(68px,7vw,100px);width:94px}
-  }
-  @media(max-width:800px){
-    .landing-logo{left:auto;right:clamp(24px,8vw,60px);top:74px;width:82px}
-  }
   .intro-brand{
     display:flex;align-items:center;gap:11px;font-size:11px;font-weight:800;
     letter-spacing:.20em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.35);
@@ -888,7 +867,6 @@
 
   <section id="projectIntro" class="loading" aria-label="Apresentação do projeto">
     <div class="intro-wrap">
-      <img class="landing-logo" src="logo-maiquel-pelo-mundo.png" alt="Maiquel pelo Mundo" aria-label="Maiquel pelo Mundo" decoding="sync">
       <div class="intro-top">
         <div class="intro-controls">
           <div class="intro-lang" role="group" aria-label="Idioma"><button id="langPt" class="active" type="button" title="Português" aria-label="Português"><span class="fi fi-br intro-lang-flag"></span></button><button id="langEn" type="button" title="English" aria-label="English"><span class="fi fi-us intro-lang-flag"></span></button></div>
