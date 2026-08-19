@@ -1236,7 +1236,7 @@ async function loadAirportsDatabase(){
   var LANDING_CONFIG = {
     gallery: {
       // Seu repositório real. A página tenta "gallery" e "Gallery".
-      repo: 'maiquelbruno/travel-track-preview',
+      repo: 'maiquelbruno/voltaomundo',
       branch: 'main',
       folders: ['gallery','Gallery'],
       allowedExtensions: ['jpg','jpeg','png','webp','avif','gif']
@@ -2410,9 +2410,17 @@ async function loadAirportsDatabase(){
   var galleryPresentationTimer=null;
   var galleryPresentationRunning=false;
 
+  function galleryFetch(url, options, timeoutMs){
+    timeoutMs=timeoutMs||9000;
+    var controller=typeof AbortController!=='undefined'?new AbortController():null;
+    var timer=controller?setTimeout(function(){controller.abort();},timeoutMs):null;
+    var opts=Object.assign({},options||{});
+    if(controller)opts.signal=controller.signal;
+    return fetch(url,opts).finally(function(){if(timer)clearTimeout(timer);});
+  }
   async function fetchGithubTree(branch){
     var url='https://api.github.com/repos/'+LANDING_CONFIG.gallery.repo+'/git/trees/'+encodeURIComponent(branch)+'?recursive=1';
-    var response=await fetch(url,{headers:{'Accept':'application/vnd.github+json'},cache:'no-store'});
+    var response=await galleryFetch(url,{headers:{'Accept':'application/vnd.github+json'},cache:'no-store'},9000);
     if(!response.ok)throw new Error('GitHub tree HTTP '+response.status+' @ '+branch);
     var data=await response.json();
     if(!data || !Array.isArray(data.tree))throw new Error('Resposta inválida do GitHub');
@@ -2420,13 +2428,13 @@ async function loadAirportsDatabase(){
   }
   async function fetchGithubGalleryFolder(folder,branch){
     var url='https://api.github.com/repos/'+LANDING_CONFIG.gallery.repo+'/contents/'+folder+'?ref='+encodeURIComponent(branch);
-    var response=await fetch(url,{headers:{'Accept':'application/vnd.github+json'},cache:'no-store'});
+    var response=await galleryFetch(url,{headers:{'Accept':'application/vnd.github+json'},cache:'no-store'},9000);
     if(!response.ok)throw new Error('GitHub gallery HTTP '+response.status+' @ '+folder+' @ '+branch);
     var data=await response.json();
     return Array.isArray(data)?data:[];
   }
   async function fetchGalleryManifest(){
-    var response=await fetch('gallery.json?v='+Date.now(),{cache:'no-store'});
+    var response=await galleryFetch('gallery.json?v='+Date.now(),{cache:'no-store'},5000);
     if(!response.ok)throw new Error('gallery.json HTTP '+response.status);
     var data=await response.json();
     if(!Array.isArray(data))throw new Error('gallery.json deve ser uma lista');
