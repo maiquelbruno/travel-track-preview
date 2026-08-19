@@ -860,6 +860,40 @@
 }
 /* ===== fim do patch ===== */
 
+
+/* ===== Logo principal adicionada sem sobreposição ===== */
+.intro-logo{
+  display:flex;
+  align-items:center;
+  flex:0 1 auto;
+  min-width:0;
+  width:clamp(150px, 22vw, 270px);
+  height:54px;
+  text-decoration:none;
+  isolation:isolate;
+}
+.intro-logo img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:left center;
+  filter:drop-shadow(0 5px 14px rgba(0,0,0,.34));
+}
+.intro-top > .intro-controls{margin-left:auto;flex:0 0 auto;}
+@media (max-width: 700px){
+  .intro-wrap{padding-left:max(14px, env(safe-area-inset-left));padding-right:max(14px, env(safe-area-inset-right));}
+  .intro-top{height:auto;min-height:48px;gap:10px;align-items:center;}
+  .intro-logo{width:min(53vw, 205px);height:48px;}
+  .intro-logo img{object-position:left center;}
+  .intro-lang{padding:3px;gap:3px;}
+  .intro-lang button{width:32px;height:32px;font-size:16px;}
+}
+@media (max-width: 390px){
+  .intro-logo{width:min(52vw, 176px);height:42px;}
+  .intro-top{gap:7px;}
+}
+
 </style>
 </head>
 <body>
@@ -868,6 +902,9 @@
   <section id="projectIntro" class="loading" aria-label="Apresentação do projeto">
     <div class="intro-wrap">
       <div class="intro-top">
+        <a class="intro-logo" href="#" aria-label="Maiquel pelo Mundo">
+          <img src="logo-maiquel-pelo-mundo.png" alt="Maiquel pelo Mundo" decoding="async" fetchpriority="high">
+        </a>
         <div class="intro-controls">
           <div class="intro-lang" role="group" aria-label="Idioma"><button id="langPt" class="active" type="button" title="Português" aria-label="Português"><span class="fi fi-br intro-lang-flag"></span></button><button id="langEn" type="button" title="English" aria-label="English"><span class="fi fi-us intro-lang-flag"></span></button></div>
         </div>
