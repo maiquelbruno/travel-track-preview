@@ -929,6 +929,30 @@
   .intro-logo{width:108px;}
 }
 
+
+/* ===== Logo ampliada — destaque v3 ===== */
+.intro-top{
+  min-height:clamp(150px, 13vw, 210px);
+  align-items:flex-start;
+}
+.intro-logo{
+  width:clamp(260px, 26vw, 340px);
+  aspect-ratio:3 / 2;
+}
+@media (max-width:700px){
+  .intro-top{
+    min-height:clamp(126px, 35vw, 170px);
+  }
+  .intro-logo{
+    width:min(216px, 58vw);
+    aspect-ratio:3 / 2;
+  }
+}
+@media (max-width:390px){
+  .intro-top{min-height:122px;}
+  .intro-logo{width:min(200px, 58vw);}
+}
+
 </style>
 </head>
 <body>
