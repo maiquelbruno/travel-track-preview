@@ -300,9 +300,9 @@
   .landing-logo{
     position:absolute;
     left:clamp(20px,3.8vw,58px);
-    top:clamp(14px,2vw,24px);
+    top:clamp(42px,3.6vw,58px);
     z-index:20;
-    width:clamp(118px,10vw,165px);
+    width:clamp(108px,8.5vw,140px);
     height:auto;
     display:block;
     object-fit:contain;
@@ -312,7 +312,13 @@
     user-select:none;
   }
   @media(max-width:800px){
-    .landing-logo{left:18px;top:14px;width:104px}
+    .landing-logo{left:18px;top:22px;width:100px}
+  }
+  @media(min-width:901px){
+    .landing-logo{
+      /* Reposicionado para ficar acima do conteúdo principal sem invadir o título. */
+      top:clamp(44px,3.8vw,60px);
+    }
   }
   .intro-brand{
     display:flex;align-items:center;gap:11px;font-size:11px;font-weight:800;
