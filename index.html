@@ -1236,7 +1236,7 @@ async function loadAirportsDatabase(){
   var LANDING_CONFIG = {
     gallery: {
       // Seu repositório real. A página tenta "gallery" e "Gallery".
-      repo: 'maiquelbruno/travel-track-preview',
+      repo: 'maiquelbruno/voltaomundo',
       branch: 'main',
       folders: ['gallery','Gallery'],
       allowedExtensions: ['jpg','jpeg','png','webp','avif','gif']
@@ -2418,6 +2418,13 @@ async function loadAirportsDatabase(){
     if(!data || !Array.isArray(data.tree))throw new Error('Resposta inválida do GitHub');
     return data.tree;
   }
+  async function fetchGithubGalleryFolder(folder,branch){
+    var url='https://api.github.com/repos/'+LANDING_CONFIG.gallery.repo+'/contents/'+folder+'?ref='+encodeURIComponent(branch);
+    var response=await fetch(url,{headers:{'Accept':'application/vnd.github+json'},cache:'no-store'});
+    if(!response.ok)throw new Error('GitHub gallery HTTP '+response.status+' @ '+folder+' @ '+branch);
+    var data=await response.json();
+    return Array.isArray(data)?data:[];
+  }
   async function fetchGalleryManifest(){
     var response=await fetch('gallery.json?v='+Date.now(),{cache:'no-store'});
     if(!response.ok)throw new Error('gallery.json HTTP '+response.status);
@@ -2458,6 +2465,19 @@ async function loadAirportsDatabase(){
           var rawPath=item.path.split('/').map(encodeURIComponent).join('/');
           return {name:item.path.split('/').pop(),path:item.path,download_url:'https://raw.githubusercontent.com/'+LANDING_CONFIG.gallery.repo+'/'+treeBranch+'/'+rawPath};
         });
+      }
+      if(!landingGalleryItems.length){
+        var folders=LANDING_CONFIG.gallery.folders||['gallery','Gallery'];
+        for(var f=0;f<folders.length && !landingGalleryItems.length;f++){
+          try{
+            var folderItems=await fetchGithubGalleryFolder(folders[f],treeBranch||LANDING_CONFIG.gallery.branch||'main');
+            landingGalleryItems=folderItems.filter(function(item){
+              return item && item.type==='file' && isGalleryImage(item.name) && item.download_url;
+            }).map(function(item){
+              return {name:item.name,path:item.path,download_url:item.download_url};
+            });
+          }catch(folderErr){lastError=folderErr;}
+        }
       }
       if(!landingGalleryItems.length){
         try{
