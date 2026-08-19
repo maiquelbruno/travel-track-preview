@@ -2452,67 +2452,110 @@ async function loadAirportsDatabase(){
     });
   }
   async function fetchRelativeNumberedGallery(){
-    // Fallback rápido: a galeria deste projeto fica no repositório
-    // maiqueIbruno/travel-track-preview, na pasta gallery.
-    // Não fazemos varredura sequencial de centenas de URLs, pois isso pode
-    // deixar a janela presa em "Carregando galeria..." quando a API falha.
+    // Último recurso: tenta os nomes numerados diretamente. Faz somente
+    // requisições concorrentes limitadas, para nunca deixar a galeria travada.
     var repo=LANDING_CONFIG.gallery.repo;
     var branch=LANDING_CONFIG.gallery.branch||'main';
     var folders=LANDING_CONFIG.gallery.folders||['gallery','Gallery'];
     var extensions=LANDING_CONFIG.gallery.allowedExtensions||['jpg','jpeg','png','webp','avif','gif'];
     var items=[];
-    for(var f=0;f<folders.length;f++){
-      for(var n=1;n<=120;n++){
-        var numbers=[String(n).padStart(4,'0'),String(n).padStart(3,'0'),String(n).padStart(2,'0'),String(n)];
-        for(var ni=0;ni<numbers.length;ni++){
-          for(var ei=0;ei<extensions.length;ei++){
-            var file=numbers[ni]+'.'+extensions[ei];
-            var url='https://raw.githubusercontent.com/'+repo+'/'+branch+'/'+folders[f]+'/'+file;
-            try{
-              var response=await fetch(url,{method:'HEAD',cache:'no-store'});
-              if(response.ok){items.push({name:file,path:folders[f]+'/'+file,download_url:url});break;}
-            }catch(e){}
-          }
-        }
+    var maxNumber=150;
+    var concurrency=12;
+
+    // Testamos primeiro os padrões mais comuns: 1.jpg, 01.jpg, 001.jpg,
+    // 0001.jpg etc. Para cada número, as extensões são verificadas em paralelo.
+    async function findNumber(number){
+      var numbers=[String(number),String(number).padStart(2,'0'),String(number).padStart(3,'0'),String(number).padStart(4,'0')];
+      var candidates=[];
+      folders.forEach(function(folder){
+        numbers.forEach(function(n){
+          extensions.forEach(function(ext){
+            candidates.push({
+              name:n+'.'+ext,
+              path:folder+'/'+n+'.'+ext,
+              download_url:'https://raw.githubusercontent.com/'+repo+'/'+branch+'/'+folder+'/'+n+'.'+ext
+            });
+          });
+        });
+      });
+      // Mantém no máximo 12 HEADs simultâneos por número.
+      for(var start=0;start<candidates.length;start+=12){
+        var batch=candidates.slice(start,start+12);
+        var result=await Promise.all(batch.map(async function(candidate){
+          try{
+            var response=await galleryFetch(candidate.download_url,{method:'HEAD',cache:'no-store'},2500);
+            return response.ok?candidate:null;
+          }catch(e){return null;}
+        }));
+        var hit=result.find(function(item){return !!item;});
+        if(hit)return hit;
       }
-      if(items.length)break;
+      return null;
+    }
+
+    for(var base=1;base<=maxNumber;base+=concurrency){
+      var jobs=[];
+      for(var n=base;n<base+concurrency && n<=maxNumber;n++)jobs.push(findNumber(n));
+      var found=await Promise.all(jobs);
+      found.forEach(function(item){if(item)items.push(item);});
+      if(items.length && found.every(function(item){return !item;}))break;
     }
     return items;
+  }
+
+  async function fetchJsDelivrGallery(){
+    var repo=LANDING_CONFIG.gallery.repo;
+    var branch=LANDING_CONFIG.gallery.branch||'main';
+    var response=await galleryFetch('https://data.jsdelivr.com/v1/package/gh/'+repo+'@'+encodeURIComponent(branch)+'/flat',{cache:'no-store'},7000);
+    if(!response.ok)throw new Error('jsDelivr API HTTP '+response.status);
+    var data=await response.json();
+    if(!data || !Array.isArray(data.files))throw new Error('Resposta inválida do jsDelivr');
+    var prefixes=(LANDING_CONFIG.gallery.folders||['gallery','Gallery']).map(function(folder){return '/'+folder.toLowerCase()+'/';});
+    return data.files.filter(function(item){
+      if(!item || !item.name || item.type==='directory')return false;
+      var lower=item.name.toLowerCase();
+      var inGallery=prefixes.some(function(prefix){return lower.indexOf(prefix)===0;});
+      return inGallery && isGalleryImage(item.name.split('/').pop());
+    }).map(function(item){
+      var path=item.name.replace(/^\//,'');
+      return {name:path.split('/').pop(),path:path,download_url:'https://cdn.jsdelivr.net/gh/'+repo+'@'+branch+'/'+path};
+    });
   }
 
   async function loadLandingGallery(){
     var grid=document.getElementById('galleryGrid');
     if(!grid)return;
     var initialStatus=grid.querySelector('.gallery-status');
-    if(initialStatus){initialStatus.textContent=getIntroLang()==='en'?'Loading gallery…':'Carregando galeria…';}
-    try{
-      var tree=null,lastError=null,treeBranch='';
-      // 1) Tenta o GitHub API quando estiver disponível.
-      var branches=[LANDING_CONFIG.gallery.branch||'main','master'];
-      for(var b=0;b<branches.length && !tree;b++){
-        try{tree=await fetchGithubTree(branches[b]);treeBranch=branches[b];}catch(err){lastError=err;}
-      }
-      if(tree){
-        var prefixes=['gallery/','Gallery/'];
-        landingGalleryItems=tree.filter(function(item){
-          if(!item || item.type!=='blob' || !item.path)return false;
-          var path=item.path;
-          var inGallery=prefixes.some(function(prefix){return path.indexOf(prefix)===0;});
-          return inGallery && isGalleryImage(path.split('/').pop());
-        }).map(function(item){
-          var rawPath=item.path.split('/').map(encodeURIComponent).join('/');
-          return {name:item.path.split('/').pop(),path:item.path,download_url:'https://raw.githubusercontent.com/'+LANDING_CONFIG.gallery.repo+'/'+treeBranch+'/'+rawPath};
-        });
-      }
+    if(initialStatus)initialStatus.textContent=getIntroLang()==='en'?'Loading gallery…':'Carregando galeria…';
+    landingGalleryItems=[];
 
-      // 2) Tenta a API da pasta diretamente.
+    var lastError=null;
+    try{
+      // 1) Primeiro tenta o manifesto local. Se existir, é a opção mais
+      // estável e não depende de APIs externas.
+      try{
+        var manifest=await fetchGalleryManifest();
+        landingGalleryItems=manifest.map(function(item){
+          var name=typeof item==='string'?item:item.name;
+          var path=typeof item==='string'?item:(item.path||item.url||'');
+          if(!path)return null;
+          if(path.indexOf('http')===0)return {name:name||path.split('/').pop(),path:path,download_url:path};
+          path=path.replace(/^\/+/,'');
+          return {name:name||path.split('/').pop(),path:path,download_url:'./'+path};
+        }).filter(function(item){return item&&isGalleryImage(item.name);});
+      }catch(errManifest){lastError=errManifest;}
+
+      // 2) Se não houver manifesto, consulta somente a pasta no GitHub.
+      // Não usamos mais a árvore recursiva do repositório, que pode sofrer
+      // rate-limit e deixar a galeria aguardando por muito tempo.
       if(!landingGalleryItems.length){
         var folders=LANDING_CONFIG.gallery.folders||['gallery','Gallery'];
+        var branch=LANDING_CONFIG.gallery.branch||'main';
         for(var f=0;f<folders.length && !landingGalleryItems.length;f++){
           try{
-            var folderItems=await fetchGithubGalleryFolder(folders[f],treeBranch||LANDING_CONFIG.gallery.branch||'main');
+            var folderItems=await fetchGithubGalleryFolder(folders[f],branch);
             landingGalleryItems=folderItems.filter(function(item){
-              return item && item.type==='file' && isGalleryImage(item.name) && item.download_url;
+              return item&&item.type==='file'&&isGalleryImage(item.name)&&item.download_url;
             }).map(function(item){
               return {name:item.name,path:item.path,download_url:item.download_url};
             });
@@ -2520,36 +2563,37 @@ async function loadAirportsDatabase(){
         }
       }
 
-      // 3) Tenta um manifesto local, se existir.
+      // 3) jsDelivr fornece a lista do conteúdo do repositório sem depender
+      // do limite da API pública do GitHub e funciona bem no GitHub Pages.
       if(!landingGalleryItems.length){
-        try{
-          var manifest=await fetchGalleryManifest();
-          landingGalleryItems=manifest.map(function(item){
-            var name=typeof item==='string'?item:item.name;
-            var path=typeof item==='string'?item:(item.path||item.url||'');
-            if(!path)return null;
-            if(path.indexOf('http')===0)return {name:name||path.split('/').pop(),path:path,download_url:path};
-            path=path.replace(/^\/+/, '');
-            return {name:name||path.split('/').pop(),path:path,download_url:'./'+path};
-          }).filter(function(item){return item&&isGalleryImage(item.name);});
-        }catch(err2){lastError=err2;}
+        try{landingGalleryItems=await fetchJsDelivrGallery();}
+        catch(errCdn){lastError=errCdn;}
       }
 
-      // 4) Fallback definitivo: procura os arquivos numerados diretamente no
-      // GitHub Pages. Assim a galeria continua funcionando mesmo quando a API
-      // do GitHub estiver indisponível ou o repositório não expuser a API.
+      // 4) Último recurso para repositórios com imagens numeradas e sem
+      // gallery.json: procura os nomes diretamente, em paralelo e com timeout.
       if(!landingGalleryItems.length){
         landingGalleryItems=await fetchRelativeNumberedGallery();
       }
 
       if(!landingGalleryItems.length)throw lastError||new Error('Nenhuma imagem encontrada na galeria');
+
+      // Ordenação natural: 1, 2, 3... ou 001, 002, 003...
+      landingGalleryItems.sort(function(a,b){
+        var an=parseInt((a.name.match(/\d+/)||['999999'])[0],10);
+        var bn=parseInt((b.name.match(/\d+/)||['999999'])[0],10);
+        if(an!==bn)return an-bn;
+        return a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:'base'});
+      });
+
       grid.innerHTML=galleryGridMarkup();
       bindGalleryGrid();
     }catch(err){
       console.warn('Gallery load failed:',err);
-      grid.innerHTML='<div class="gallery-status" data-pt="Não foi possível carregar a galeria. Verifique se as imagens numeradas estão na pasta gallery." data-en="Could not load the gallery. Make sure the numbered images are inside the gallery folder.">'+(getIntroLang()==='en'?'Could not load the gallery. Make sure the numbered images are inside the gallery folder.':'Não foi possível carregar a galeria. Verifique se as imagens numeradas estão na pasta gallery.')+'</div>';
+      grid.innerHTML='<div class="gallery-status" data-pt="Não foi possível carregar a galeria. Verifique se as imagens estão na pasta gallery." data-en="Could not load the gallery. Make sure the images are inside the gallery folder.">'+(getIntroLang()==='en'?'Could not load the gallery. Make sure the images are inside the gallery folder.':'Não foi possível carregar a galeria. Verifique se as imagens estão na pasta gallery.')+'</div>';
     }
   }
+
   function refreshGalleryDynamicText(){
     var lang=getIntroLang();
     var status=document.querySelector('#galleryGrid .gallery-status[data-pt][data-en]');
