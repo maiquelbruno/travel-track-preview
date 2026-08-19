@@ -1236,7 +1236,7 @@ async function loadAirportsDatabase(){
   var LANDING_CONFIG = {
     gallery: {
       // Seu repositório real. A página tenta "gallery" e "Gallery".
-      repo: 'maiquelbruno/voltaomundo',
+      repo: 'maiquelbruno/travel-track-preview',
       branch: 'main',
       folders: ['gallery','Gallery'],
       allowedExtensions: ['jpg','jpeg','png','webp','avif','gif']
@@ -2444,31 +2444,30 @@ async function loadAirportsDatabase(){
     });
   }
   async function fetchRelativeNumberedGallery(){
-    // Fallback para GitHub Pages: não depende da API do GitHub.
-    // A galeria deste projeto usa arquivos numerados (ex.: 0001.png, 0002.png...).
-    var folders=['gallery','Gallery'];
+    // Fallback rápido: a galeria deste projeto fica no repositório
+    // maiqueIbruno/travel-track-preview, na pasta gallery.
+    // Não fazemos varredura sequencial de centenas de URLs, pois isso pode
+    // deixar a janela presa em "Carregando galeria..." quando a API falha.
+    var repo=LANDING_CONFIG.gallery.repo;
+    var branch=LANDING_CONFIG.gallery.branch||'main';
+    var folders=LANDING_CONFIG.gallery.folders||['gallery','Gallery'];
     var extensions=LANDING_CONFIG.gallery.allowedExtensions||['jpg','jpeg','png','webp','avif','gif'];
     var items=[];
-    var consecutiveMisses=0;
-    var maxFiles=999;
-    for(var n=1;n<=maxFiles && consecutiveMisses<6;n++){
-      var found=null;
-      var numbers=[String(n).padStart(4,'0'),String(n).padStart(3,'0'),String(n).padStart(2,'0'),String(n)];
-      for(var fi=0;fi<folders.length && !found;fi++){
-        for(var ni=0;ni<numbers.length && !found;ni++){
-          for(var ei=0;ei<extensions.length && !found;ei++){
-            var path='./'+folders[fi]+'/'+numbers[ni]+'.'+extensions[ei];
+    for(var f=0;f<folders.length;f++){
+      for(var n=1;n<=120;n++){
+        var numbers=[String(n).padStart(4,'0'),String(n).padStart(3,'0'),String(n).padStart(2,'0'),String(n)];
+        for(var ni=0;ni<numbers.length;ni++){
+          for(var ei=0;ei<extensions.length;ei++){
+            var file=numbers[ni]+'.'+extensions[ei];
+            var url='https://raw.githubusercontent.com/'+repo+'/'+branch+'/'+folders[f]+'/'+file;
             try{
-              var response=await fetch(path,{method:'GET',cache:'no-store'});
-              if(response.ok){
-                found={name:numbers[ni]+'.'+extensions[ei],path:folders[fi]+'/'+numbers[ni]+'.'+extensions[ei],download_url:path};
-              }
+              var response=await fetch(url,{method:'HEAD',cache:'no-store'});
+              if(response.ok){items.push({name:file,path:folders[f]+'/'+file,download_url:url});break;}
             }catch(e){}
           }
         }
       }
-      if(found){items.push(found);consecutiveMisses=0;}
-      else consecutiveMisses++;
+      if(items.length)break;
     }
     return items;
   }
