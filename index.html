@@ -2443,6 +2443,36 @@ async function loadAirportsDatabase(){
       btn.addEventListener('click',function(){openGalleryLightbox(Number(btn.getAttribute('data-gallery-index')));});
     });
   }
+  async function fetchRelativeNumberedGallery(){
+    // Fallback para GitHub Pages: não depende da API do GitHub.
+    // A galeria deste projeto usa arquivos numerados (ex.: 0001.png, 0002.png...).
+    var folders=['gallery','Gallery'];
+    var extensions=LANDING_CONFIG.gallery.allowedExtensions||['jpg','jpeg','png','webp','avif','gif'];
+    var items=[];
+    var consecutiveMisses=0;
+    var maxFiles=999;
+    for(var n=1;n<=maxFiles && consecutiveMisses<6;n++){
+      var found=null;
+      var numbers=[String(n).padStart(4,'0'),String(n).padStart(3,'0'),String(n).padStart(2,'0'),String(n)];
+      for(var fi=0;fi<folders.length && !found;fi++){
+        for(var ni=0;ni<numbers.length && !found;ni++){
+          for(var ei=0;ei<extensions.length && !found;ei++){
+            var path='./'+folders[fi]+'/'+numbers[ni]+'.'+extensions[ei];
+            try{
+              var response=await fetch(path,{method:'GET',cache:'no-store'});
+              if(response.ok){
+                found={name:numbers[ni]+'.'+extensions[ei],path:folders[fi]+'/'+numbers[ni]+'.'+extensions[ei],download_url:path};
+              }
+            }catch(e){}
+          }
+        }
+      }
+      if(found){items.push(found);consecutiveMisses=0;}
+      else consecutiveMisses++;
+    }
+    return items;
+  }
+
   async function loadLandingGallery(){
     var grid=document.getElementById('galleryGrid');
     if(!grid)return;
@@ -2450,6 +2480,7 @@ async function loadAirportsDatabase(){
     if(initialStatus){initialStatus.textContent=getIntroLang()==='en'?'Loading gallery…':'Carregando galeria…';}
     try{
       var tree=null,lastError=null,treeBranch='';
+      // 1) Tenta o GitHub API quando estiver disponível.
       var branches=[LANDING_CONFIG.gallery.branch||'main','master'];
       for(var b=0;b<branches.length && !tree;b++){
         try{tree=await fetchGithubTree(branches[b]);treeBranch=branches[b];}catch(err){lastError=err;}
@@ -2466,6 +2497,8 @@ async function loadAirportsDatabase(){
           return {name:item.path.split('/').pop(),path:item.path,download_url:'https://raw.githubusercontent.com/'+LANDING_CONFIG.gallery.repo+'/'+treeBranch+'/'+rawPath};
         });
       }
+
+      // 2) Tenta a API da pasta diretamente.
       if(!landingGalleryItems.length){
         var folders=LANDING_CONFIG.gallery.folders||['gallery','Gallery'];
         for(var f=0;f<folders.length && !landingGalleryItems.length;f++){
@@ -2479,6 +2512,8 @@ async function loadAirportsDatabase(){
           }catch(folderErr){lastError=folderErr;}
         }
       }
+
+      // 3) Tenta um manifesto local, se existir.
       if(!landingGalleryItems.length){
         try{
           var manifest=await fetchGalleryManifest();
@@ -2487,17 +2522,25 @@ async function loadAirportsDatabase(){
             var path=typeof item==='string'?item:(item.path||item.url||'');
             if(!path)return null;
             if(path.indexOf('http')===0)return {name:name||path.split('/').pop(),path:path,download_url:path};
-            path=path.replace(/^\/+/, '').replace(/^gallery\//i,'gallery/');
+            path=path.replace(/^\/+/, '');
             return {name:name||path.split('/').pop(),path:path,download_url:'./'+path};
           }).filter(function(item){return item&&isGalleryImage(item.name);});
         }catch(err2){lastError=err2;}
       }
-      if(!landingGalleryItems.length)throw lastError||new Error('Nenhuma imagem encontrada');
+
+      // 4) Fallback definitivo: procura os arquivos numerados diretamente no
+      // GitHub Pages. Assim a galeria continua funcionando mesmo quando a API
+      // do GitHub estiver indisponível ou o repositório não expuser a API.
+      if(!landingGalleryItems.length){
+        landingGalleryItems=await fetchRelativeNumberedGallery();
+      }
+
+      if(!landingGalleryItems.length)throw lastError||new Error('Nenhuma imagem encontrada na galeria');
       grid.innerHTML=galleryGridMarkup();
       bindGalleryGrid();
     }catch(err){
       console.warn('Gallery load failed:',err);
-      grid.innerHTML='<div class="gallery-status" data-pt="Não foi possível carregar a galeria. Confira a pasta gallery no GitHub ou o arquivo gallery.json." data-en="Could not load the gallery. Check the gallery folder on GitHub or the gallery.json file.">'+(getIntroLang()==='en'?'Could not load the gallery. Check the gallery folder on GitHub or the gallery.json file.':'Não foi possível carregar a galeria. Confira a pasta gallery no GitHub ou o arquivo gallery.json.')+'</div>';
+      grid.innerHTML='<div class="gallery-status" data-pt="Não foi possível carregar a galeria. Verifique se as imagens numeradas estão na pasta gallery." data-en="Could not load the gallery. Make sure the numbered images are inside the gallery folder.">'+(getIntroLang()==='en'?'Could not load the gallery. Make sure the numbered images are inside the gallery folder.':'Não foi possível carregar a galeria. Verifique se as imagens numeradas estão na pasta gallery.')+'</div>';
     }
   }
   function refreshGalleryDynamicText(){
