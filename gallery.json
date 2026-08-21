@@ -402,5 +402,9 @@
     {
         "name":  "0100.png",
         "path":  "gallery/0100.png"
+    },
+    {
+        "name":  "0101.png",
+        "path":  "gallery/0101.png"
     }
 ]
