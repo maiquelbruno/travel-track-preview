@@ -1,4 +1,10 @@
-{
-    "name":  "0001.png",
-    "path":  "gallery/0001.png"
-}
+[
+    {
+        "name":  "0001.png",
+        "path":  "gallery/0001.png"
+    },
+    {
+        "name":  "0002.png",
+        "path":  "gallery/0002.png"
+    }
+]
